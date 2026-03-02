@@ -65,6 +65,55 @@ sample_variances <- function(df) {
                     "sd_sub__cond" = df_fit$sd_sub__cond))
 }
 
+sample_variances_scale <- function(df) {
+  fit <- brm(
+    Y ~ cond + (1 + cond || sub) + (1 | item), 
+    data = df,
+    chains = 4,
+    iter = 3000,
+    warmup = 1000,
+    cores = 4
+  )
+  
+  df_fit <- as.data.frame(fit)
+  
+  return(data.frame("sigma" = df_fit$sigma, 
+                    "sd_sub__cond" = df_fit$sd_sub__cond))
+}
+
+sample_variances_binary <- function(df) {
+  fit <- brm(
+    Y ~ cond + (1 + cond || sub) + (1 | item), 
+    data = df,
+    chains = 4,
+    iter = 3000,
+    warmup = 1000,
+    cores = 4
+  )
+  
+  sigma_latent <- sqrt(pi^2 / 3)  # acts like sigma in Gaussian
+  
+  df_fit <- as.data.frame(fit)
+  
+  return(data.frame("sigma" = sigma_latent, 
+                    "sd_sub__cond" = df_fit$sd_sub__cond))
+}
+
+fit_binary_model <- function(df) {
+  library(brms)
+  
+  fit <- brm(
+    Y ~ cond + (1 + cond || sub) + (1 | item), 
+    data = df,
+    chains = 4,
+    iter = 3000,
+    warmup = 1000,
+    cores = 4
+  )
+  
+  return(fit)
+}
+
 compute_gamma <- function(df_fit) {
   
   # variance estimates
