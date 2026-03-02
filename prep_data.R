@@ -148,16 +148,22 @@ prep <- analysis_data %>%
   rename("sub" = subject,
          "cond" = repeated,
          "Y" = response) %>% 
-  group_by(procedure_id) %>% 
+  group_by(procedure_id, truth_rating_scale) %>% 
   nest()
 
 data <- prep %>% 
+  filter(truth_rating_scale == "dichotomous") %>% 
   pull(data)
 
 data_ids <- prep %>% 
+  filter(truth_rating_scale == "dichotomous") %>% 
   pull(procedure_id)
 
 source("reliability_functions.R")
+
+test <- data[[1]]
+
+model <- dich_model(test)
 
 ## Compute Gamma ---------------------------------------------------------------
 
