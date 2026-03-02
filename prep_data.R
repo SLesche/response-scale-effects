@@ -147,14 +147,29 @@ analysis_data <- analysis_data %>%
 prep <- analysis_data %>% 
   rename("sub" = subject,
          "cond" = repeated,
-         "Y" = response) %>% 
-  group_by(procedure_id) %>% 
+         "Y" = response,
+         "item" = statement_id) %>% 
+  group_by(procedure_id, truth_rating_scale) %>% 
   nest()
 
-data <- prep %>% 
+data_binary <- prep %>% 
+  filter(truth_rating_scale == "dichotomous") %>% 
+  head(1) %>%
   pull(data)
 
-data_ids <- prep %>% 
+data_ids_binary <- prep %>% 
+  filter(truth_rating_scale == "dichotomous") %>% 
+  # head(1) %>%
+  pull(procedure_id)
+
+data_scale <- prep %>% 
+  filter(truth_rating_scale != "dichotomous") %>% 
+  # head(2) %>% 
+  pull(data)
+
+data_ids_scale <- prep %>% 
+  filter(truth_rating_scale != "dichotomous") %>% 
+  # head(2) %>% 
   pull(procedure_id)
 
 source("reliability_functions.R")
@@ -163,23 +178,35 @@ source("reliability_functions.R")
 
 ### with Method of Moments Formula (Rouder & Mehrvarz, 2024) -------------------
 # will create NaNs when gamma^2 is negative
-results_mom <- lapply(data, mom)
+# results_mom <- lapply(data, mom)
 
 
 ### with Bayesian Hierarchical Modeling ----------------------------------------
+posterior_variances_binary <- lapply(data_binary, sample_variances_binary_simulation)
 
 # sample posterior variances
-if (file.exists("model/posterior_variances.rds")) {
-  posterior_variances <- readRDS("model/posterior_variances.rds")
+if (file.exists("model/posterior_variances_binary.rds")) {
+  posterior_variances_binary <- readRDS("model/posterior_variances_binary.rds")
   message("Loaded posterior variances from RDS file.")
 } else {
-  posterior_variances <- lapply(data, sample_variances)
-  saveRDS(posterior_variances, "model/posterior_variances.rds")
+  posterior_variances_binary <- lapply(data_binary, sample_variances_binary)
+  saveRDS(posterior_variances_binary, "model/posterior_variances_binary.rds")
   message("Sampled posterior variances and saved them to an RDS file.")
 }
 
+# sample posterior variances
+if (file.exists("model/posterior_variances_scale.rds")) {
+  posterior_variances_scale <- readRDS("model/posterior_variances_scale.rds")
+  message("Loaded posterior variances from RDS file.")
+} else {
+  posterior_variances_scale <- lapply(data_scale, sample_variances_scale)
+  saveRDS(posterior_variances_scale, "model/posterior_variances_scale.rds")
+  message("Sampled posterior variances and saved them to an RDS file.")
+}
+
+
 # compute gamma using posterior variance samples
-results <- lapply(posterior_variances, compute_gamma)
+results <- lapply(posterior_variances_binary, compute_gamma)
 
 # convert to tibble
 dat <- tibble(
@@ -198,9 +225,11 @@ dat$N <- numeric(length(results))
 for (i in 1:length(results)) {
   dat$lower[i] = quantile(dat$gamma_distribution[[i]], probs = .025)
   dat$upper[i] = quantile(dat$gamma_distribution[[i]], probs = .975)
-  dat$L[i] <- as.numeric(round(mean(table(dichotomous_data_list[[i]]$sub, dichotomous_data_list[[i]]$cond)))) # add trial number per condition (repeated vs new) to dataframe
-  dat$N[i] <- length(unique(dichotomous_data_list[[i]]$sub))
+  dat$L[i] <- as.numeric(round(mean(table(data_binary[[i]]$sub, data_binary[[i]]$cond)))) # add trial number per condition (repeated vs new) to dataframe
+  dat$N[i] <- length(unique(data_binary[[i]]$sub))
 }
+
+dat$procedure_id <- data_ids_binary
 
 ### adding truth status to the Model -------------------------------------------
 # Maybe put this in again?
@@ -241,20 +270,13 @@ mean_te <- function(df) {
 }
 
 # read in additional information from manually coded data
-overview <- study_overview
+overview <- procedure_data %>% 
+  left_join(., study_overview) 
 
-# restructure factor levels to reflect ordinal order
-vizdata <- merge(overview, dat) |>
-  mutate(retention = fct_relevel(retention, c("immediate", "1 minute", "2 minutes", "few minutes", "4 minutes", "5 minutes", "10 minutes", "20 minutes", "1 day", "2 days", "3 days", "1 week", "1 month", "unclear"))) |>
-  mutate(stimuli = fct_relevel(stimuli, c("fake news", "trivia, likely to be known", "trivia, mixed known and unknown", "trivia, uncertain validity", "trivia, unknown"))) |>
-  mutate(initial_task = ifelse(initial_task == 'presentation only', 'presentation', initial_task)) 
-vizdata$stimuli <- stringr::str_wrap(vizdata$stimuli, width = 10)
-levels(vizdata$retention) <- c("immediate", "1 min", "2 min", "few min", "4 min", "5 min", "10 min", "20 min", "1 day", "2 days", "3 days", "1 week", "1 month", "unclear")
-
-# filter for only between subjects conditions
-vizdata_b <- vizdata |>
-  filter(between_within == "" | between_within == "between")
-
+vizdata <- dat %>% 
+  left_join(., overview) %>% 
+  left_join(., publications_overview) %>% 
+  select(authors, conducted, study_id, n_participants, everything())
 
 ### Reliability, Gamma, and Trial Size -----------------------------------------
 
@@ -274,7 +296,7 @@ ggplot(data = reldata,
                      breaks = breaks,
                      minor_breaks = NULL,
                      labels = labels) + 
-  geom_line(linewidth = 0.65) +
+  geom_line(linewidth = 1) +
   coord_capped_cart(left = "both", 
                     bottom = "both") +
   theme(legend.title = element_text(hjust=0.5),
@@ -294,24 +316,24 @@ ggsave("reliability.pdf", dpi = 300, width = 12, height = 7, units = "cm")
 ### Posterior Gamma Distributions ----------------------------------------------
 
 # restructure data to access posterior gamma distributions
-gamma_distr_long <- vizdata_b |>
+gamma_distr_long <- vizdata |>
   unnest(gamma_distribution) |>
   rename(value = gamma_distribution) |>
-  mutate(cite = fct_rev(cite))
+  mutate(procedure_id = factor(procedure_id))
 
 # make the plot
 ggplot() +
   geom_density_ridges(data=gamma_distr_long, 
-                      aes(x = value, y = cite), 
+                      aes(x = value, y = procedure_id), 
                       alpha = 0.5, 
                       scale = 1.1, 
                       rel_min_height = 0.01) +  
-  geom_errorbar(data = vizdata_b, 
-                aes(y = cite, x = gamma, xmin = lower, xmax = upper), 
+  geom_errorbar(data = vizdata, 
+                aes(y = factor(procedure_id), x = gamma, xmin = lower, xmax = upper), 
                 width = 0.25, 
                 linewidth = 0.1) +
-  geom_point(data = vizdata_b, 
-             aes(x = gamma, y = cite, size = L, color = study)) + 
+  geom_point(data = vizdata, 
+             aes(x = gamma, y = factor(procedure_id), size = L, color = factor(study_id))) + 
   scale_x_continuous(limits = c(0, 1.2),
                      breaks = seq(0, 1.2, by = 0.2)) +
   labs(x = expression(gamma),
@@ -334,9 +356,9 @@ ggsave("gamma_overview.pdf", dpi = 300, width = 15, height = 24, units = "cm")
 
 
 ### Observed Reliability -------------------------------------------------------
-vizdata_b$reliability <- rel(vizdata_b)
+vizdata$reliability <- rel(vizdata)
 
-ggplot(data = vizdata_b, 
+ggplot(data = vizdata, 
        aes(x = gamma, y = reliability)) +
   geom_point(aes(size = L), 
              color = 'black',
@@ -368,11 +390,11 @@ ggsave("obs_rel.pdf", dpi = 300, width = 10, height = 9, units = 'cm')
 
 te <- lapply(data, mean_te)
 te <- tibble(
-  dataset = names(te),
+  dataset = data_ids,
   mean_te = as.numeric(unlist(te))
 )
 
-tedata <- merge(te, vizdata_b)
+tedata <- merge(te, vizdata)
 cor(tedata$mean_te, tedata$gamma)
 c <- round(cor(tedata$mean_te, tedata$gamma), 2)*100
 
@@ -412,7 +434,7 @@ ggsave("mean_te.pdf", dpi = 300, width = 10, height = 10, units = 'cm')
 
 ### Plot sigma_w and sigma_b distributions -------------------------------------
 
-p_sigma_b <- ggplot(data = vizdata_b, 
+p_sigma_b <- ggplot(data = vizdata, 
                     aes(x = sigma_b)) +
   geom_histogram(bins = 12, 
                  fill = viridis(100, option = "turbo")[20], 
@@ -431,7 +453,7 @@ p_sigma_b <- ggplot(data = vizdata_b,
   labs(y = "Frequency",
        x = expression(sigma * phantom("0")[b]))
 
-p_sigma_w <- ggplot(data = vizdata_b, 
+p_sigma_w <- ggplot(data = vizdata, 
                     aes(x = sigma_w)) +
   geom_histogram(bins = 12, 
                  fill = viridis(100, option = "turbo")[20], 
@@ -449,7 +471,7 @@ p_sigma_w <- ggplot(data = vizdata_b,
   labs(x = expression(sigma * phantom("0")[w]),
        y = "")
 
-p_gamma <- ggplot(data = vizdata_b, 
+p_gamma <- ggplot(data = vizdata, 
                   aes(x = gamma)) +
   geom_histogram(bins = 12, 
                  fill = viridis(100, option = "turbo")[20], 
@@ -470,3 +492,26 @@ p_gamma <- ggplot(data = vizdata_b,
 p_sigma_b + p_sigma_w + p_gamma
 ggsave("sigmaandgamma.pdf", dpi = 300, height = 5, width = 15, units = 'cm')
 
+
+vizdata %>% 
+  group_by(truth_rating_scale) %>%
+  summarize(
+    mean_gamma = mean(gamma),
+    mean_b = mean(sigma_b),
+    mean_w = mean(sigma_w)
+  )
+
+vizdata %>% 
+  select(procedure_id, truth_rating_scale, sigma_w, sigma_b, gamma) %>% 
+  pivot_longer(
+    cols = -c(procedure_id, truth_rating_scale)
+  ) %>% 
+  ggplot(
+    aes(
+      x = value,
+      color = truth_rating_scale,
+      fill = truth_rating_scale
+    )
+  )+
+  geom_density(alpha = 0.5) +
+  facet_wrap(~name)

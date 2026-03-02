@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 data/ted.db
+model/posterior_variances.rds
