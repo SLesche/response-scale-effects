@@ -4,3 +4,4 @@
 .Ruserdata
 data/ted.db
 model/posterior_variances.rds
+data/analysis_data.csv

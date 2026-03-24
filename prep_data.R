@@ -119,7 +119,7 @@ analysis_data <- full_data %>%
       "next_day"
     ),
     repetition_sameday = ifelse(repetition_time < 60*24, 1, 0),
-    repeated = repeated - 0.5
+    # repeated = repeated - 0.5
   )
 
 has_complete_data <- analysis_data %>% 
@@ -144,8 +144,4 @@ prop_true <- analysis_data %>%
 analysis_data <- analysis_data %>% 
   left_join(prop_true)
 
-prep <- analysis_data %>% 
-  group_by(procedure_id, truth_rating_scale) %>% 
-  nest()
-
-
+data.table::fwrite(analysis_data, "data/analysis_data.csv")
