@@ -93,13 +93,10 @@ max_normalize <- function(vec) {
 
 
 likert_scale_response <- function(response, certainty){
-  max_certainty = max_normalize(certainty)
-  
-  if (sum(max_certainty) == 0) {
-    # If certainty is NA, all will be 0
+  if (all(is.na(certainty)) == 1){
     likert_response = response
   } else {
-    likert_response <- 0.5 + (response - 0.5) * max_certainty
+    likert_response <- max_normalize((response - 0.5) * certainty)
   }
   
   return(likert_response)
