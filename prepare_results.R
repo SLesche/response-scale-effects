@@ -55,8 +55,8 @@ data <- data %>%
     d_low = map_dbl(effsize, ~ .x$CI_low),
     d_high = map_dbl(effsize, ~ .x$CI_high),
     art_d_estimate = map_dbl(art_effsize, ~ ifelse(has_art, .x$Cohens_d, NA)),
-    art_d_low = map_dbl(art_effsize, ~ ifelse(has_art, .x$Cohens_d, NA)),
-    art_d_high = map_dbl(art_effsize, ~ ifelse(has_art, .x$Cohens_d, NA)),
+    art_d_low = map_dbl(art_effsize, ~ ifelse(has_art, .x$CI_low, NA)),
+    art_d_high = map_dbl(art_effsize, ~ ifelse(has_art, .x$CI_high, NA)),
     cert_d_estimate = map_dbl(certainty_effsize, ~ ifelse(has_certainty, .x$Cohens_d, NA)),
     cert_d_low = map_dbl(certainty_effsize, ~ ifelse(has_certainty, .x$CI_low, NA)),
     cert_d_high = map_dbl(certainty_effsize, ~ ifelse(has_certainty, .x$CI_high, NA))

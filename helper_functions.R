@@ -134,3 +134,34 @@ transform_artificial_responses <- function(data, truth_rating_scale){
   
   return(data)
 }
+
+make_2x2_from_coefs <- function(model) {
+  
+  b <- coef(model)
+  V <- vcov(model)
+  
+  b0 <- b["intrcpt"]
+  b1 <- b["scale_typescale"]
+  b2 <- b["conditionartificial"]
+  b3 <- b["scale_typescale:conditionartificial"]
+  
+  X <- list(
+    c(1,0,0,0),
+    c(1,0,1,0),
+    c(1,1,0,0),
+    c(1,1,1,1)
+  )
+  
+  est <- sapply(X, function(x) sum(x * b))
+  
+  se <- sapply(X, function(x) sqrt(t(x) %*% V %*% x))
+  
+  data.frame(
+    scale_type = rep(c("dichotomous", "scale"), each = 2),
+    condition  = rep(c("control", "artificial"), times = 2),
+    estimate = est,
+    se = se,
+    ci.lb = est - 1.96 * se,
+    ci.ub = est + 1.96 * se
+  )
+}
