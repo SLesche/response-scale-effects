@@ -15,12 +15,19 @@ prep <- analysis_data %>%
 
 data <- prep %>% 
   mutate(
-    has_certainty = map(
+    has_certainty = map_dbl(
       data, ~ifelse(
-        mean(is.na(.x$certainty)) == 1,
+        all(is.na(.x$certainty)),
         0,
         1
       )
+    )
+  ) %>% 
+  mutate(
+    has_art = ifelse(
+      truth_rating_scale != "dichotomous" || has_certainty,
+      1,
+      0
     )
   ) %>% 
   mutate(
@@ -47,12 +54,12 @@ data <- data %>%
     d_estimate = map_dbl(effsize, ~ .x$Cohens_d),
     d_low = map_dbl(effsize, ~ .x$CI_low),
     d_high = map_dbl(effsize, ~ .x$CI_high),
-    art_d_estimate = map_dbl(art_effsize, ~ .x$Cohens_d),
-    art_d_low = map_dbl(art_effsize, ~ .x$CI_low),
-    art_d_high = map_dbl(art_effsize, ~ .x$CI_high),
-    cert_d_estimate = map_dbl(certainty_effsize, ~ ifelse(!all(is.na(.x)), .x$Cohens_d, NA)),
-    cert_d_low = map_dbl(certainty_effsize, ~ ifelse(!all(is.na(.x)), .x$CI_low, NA)),
-    cert_d_high = map_dbl(certainty_effsize, ~ ifelse(!all(is.na(.x)), .x$CI_high, NA))
+    art_d_estimate = map_dbl(art_effsize, ~ ifelse(has_art, .x$Cohens_d, NA)),
+    art_d_low = map_dbl(art_effsize, ~ ifelse(has_art, .x$Cohens_d, NA)),
+    art_d_high = map_dbl(art_effsize, ~ ifelse(has_art, .x$Cohens_d, NA)),
+    cert_d_estimate = map_dbl(certainty_effsize, ~ ifelse(has_certainty, .x$Cohens_d, NA)),
+    cert_d_low = map_dbl(certainty_effsize, ~ ifelse(has_certainty, .x$CI_low, NA)),
+    cert_d_high = map_dbl(certainty_effsize, ~ ifelse(has_certainty, .x$CI_high, NA))
   )
 
 data <- data %>% 
@@ -67,13 +74,13 @@ data <- data %>%
     sb_low = map_dbl(reliability, ~ .x$final$SB_low),
     sb_high = map_dbl(reliability, ~ .x$final$SB_high),
     var = map_dbl(stats, ~.x$var),
-    art_sb_estimate = map_dbl(art_reliability, ~ .x$final$spearmanbrown),
-    art_sb_low = map_dbl(art_reliability, ~ .x$final$SB_low),
-    art_sb_high = map_dbl(art_reliability, ~ .x$final$SB_high),
+    art_sb_estimate = map_dbl(art_reliability, ~ ifelse(has_art, .x$final$spearmanbrown, NA)),
+    art_sb_low = map_dbl(art_reliability,  ~ ifelse(has_art, .x$final$SB_low, NA)),
+    art_sb_high = map_dbl(art_reliability,  ~ ifelse(has_art, .x$final$SB_high, NA)),
     art_var = map_dbl(art_stats, ~.x$var)
   )
 
 clean_data <- data %>% 
-  select(-data)
+  select(-data, -art_data)
 
 saveRDS(clean_data, file = "data/reliability_data.Rdata")

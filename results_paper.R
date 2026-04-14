@@ -6,9 +6,9 @@ data <- readRDS("data/reliability_data.Rdata")
 
 ## Plot dichotomized data ----
 plot_data <- data %>% 
-  filter(
-    truth_rating_scale != "dichotomous"
-  ) %>% 
+  # filter(
+  #   truth_rating_scale != "dichotomous"
+  # ) %>% 
   select(
     procedure_id,
     truth_rating_scale,
@@ -60,7 +60,8 @@ plot_data_long %>%
 plot_data <- data %>% 
   filter(
     truth_rating_scale == "dichotomous",
-    has_certainty == 1
+    has_certainty == 1,
+    has_art == 1,
   ) %>% 
   select(
     procedure_id,
@@ -164,7 +165,8 @@ plot_data_long %>%
 plot_data <- data %>% 
   filter(
     truth_rating_scale == "dichotomous",
-    has_certainty == 1
+    has_certainty == 1,
+    has_art == 1
   ) %>% 
   select(
     procedure_id,
@@ -179,12 +181,16 @@ order_levels <- plot_data %>%
 
 plot_data_long <- plot_data %>% 
   pivot_longer(
-    cols = matches("^(art_)?(d_)"),
+    cols = matches("^(art_|cert_)?(d_)"),
     names_to = c("condition", ".value"),
-    names_pattern = "^(art_)?(d_.*)"
+    names_pattern = "^(art_|cert_)?(d_.*)"
   ) %>% 
   mutate(
-    condition = if_else(condition == "art_", "artificial", "control"),
+    condition = case_when(
+      condition == "art_" ~ "artificial_likert",
+      condition == "" ~ "control_truth",
+      condition == "cert_" ~ "control_certainty"
+    ),
     procedure_fac = factor(procedure_id, levels = order_levels)
   )
 
@@ -198,8 +204,9 @@ plot_data_long %>%
   # manual colors
   scale_color_manual(
     values = c(
-      "control" = "blue",
-      "artificial" = "red"
+      "control_truth" = "blue",
+      "artificial_likert" = "red",
+      "control_certainty" = "green"
     )
   ) +
   coord_flip() +
@@ -213,7 +220,7 @@ plot_data_long %>%
 
 ## Plot together data ----
 plot_data <- data %>% 
-  filter(truth_rating_scale == "likert" | has_certainty ==1) %>% 
+  filter(has_art == 1) %>% 
   select(
     procedure_id,
     truth_rating_scale,
@@ -242,7 +249,9 @@ plot_data_long <- plot_data %>%
       truth_rating_scale == "dichotomous" & condition == "control" ~ "dichotomous",
       truth_rating_scale == "dichotomous" & condition == "artificial" ~ "likert",
       truth_rating_scale == "likert" & condition == "control" ~ "likert",
-      truth_rating_scale == "likert" & condition == "artificial" ~ "dichotomous"
+      truth_rating_scale == "likert" & condition == "artificial" ~ "dichotomous",
+      truth_rating_scale == "range" & condition == "control" ~ "range",
+      truth_rating_scale == "range" & condition == "artificial" ~ "dichotomous",
     )
   )
 
@@ -257,7 +266,8 @@ plot_data_long %>%
   scale_color_manual(
     values = c(
       "dichotomous" = "blue",
-      "likert" = "red"
+      "likert" = "red",
+      "range" = "green"
     )
   ) +
   coord_flip() +
