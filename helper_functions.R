@@ -71,6 +71,29 @@ compute_effsize <- function(data){
   return(effsize)
 }
 
+compute_certainty_effsize <- function(data){
+  
+  if (all(is.na(data$certainty))){
+    effsize = NA
+  } else {
+    average_data <- data %>% 
+      group_by(subject, repeated) %>% 
+      summarize(
+        mean_truth = mean(certainty, na.rm = TRUE)
+      )  %>% 
+      pivot_wider(
+        id_cols = "subject",
+        values_from = "mean_truth",
+        names_from = repeated,
+        names_prefix = "certainty_"
+      )
+    
+    effsize = effectsize::cohens_d(average_data$certainty_1, average_data$certainty_0, paired = TRUE)
+  }
+
+  return(effsize)
+}
+
 
 dichotomize_responses <- function(response){
   dich = case_when(
