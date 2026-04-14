@@ -5,11 +5,11 @@ source("helper_functions.R")
 analysis_data <- data.table::fread("data/analysis_data.csv")
 
 prep <- analysis_data %>% 
-  filter(
-    repetition_time < 20,
-    n_statements > 50,
-    n_statements < 70
-  ) %>% 
+  # filter(
+  #   repetition_time < 20,
+  #   n_statements > 50,
+  #   n_statements < 70
+  # ) %>% 
   group_by(procedure_id, truth_rating_scale, n_statements) %>% 
   nest()
 
@@ -28,7 +28,7 @@ data <- prep %>%
   ) %>% 
   mutate(
     truth_effect = map(data, compute_subject_truth_effect),
-    art_truth_effect = map(art_data, compute_subject_truth_effect)
+    art_truth_effect = map(art_data, compute_subject_truth_effect),
   ) %>% 
   mutate(
     stats = map(truth_effect, get_distribution_stats),
@@ -38,7 +38,8 @@ data <- prep %>%
 data <- data %>% 
   mutate(
     effsize = map(data, compute_effsize),
-    art_effsize = map(art_data, compute_effsize)
+    art_effsize = map(art_data, compute_effsize),
+    certainty_effsize = map(data, compute_certainty_effsize)
   )
 
 data <- data %>% 
@@ -48,7 +49,10 @@ data <- data %>%
     d_high = map_dbl(effsize, ~ .x$CI_high),
     art_d_estimate = map_dbl(art_effsize, ~ .x$Cohens_d),
     art_d_low = map_dbl(art_effsize, ~ .x$CI_low),
-    art_d_high = map_dbl(art_effsize, ~ .x$CI_high)
+    art_d_high = map_dbl(art_effsize, ~ .x$CI_high),
+    cert_d_estimate = map_dbl(certainty_effsize, ~ ifelse(!all(is.na(.x)), .x$Cohens_d, NA)),
+    cert_d_low = map_dbl(certainty_effsize, ~ ifelse(!all(is.na(.x)), .x$CI_low, NA)),
+    cert_d_high = map_dbl(certainty_effsize, ~ ifelse(!all(is.na(.x)), .x$CI_high, NA))
   )
 
 data <- data %>% 
@@ -69,267 +73,7 @@ data <- data %>%
     art_var = map_dbl(art_stats, ~.x$var)
   )
 
-## Plot dichotomized data ----
-plot_data <- data %>% 
-  filter(
-    truth_rating_scale != "dichotomous"
-  ) %>% 
-  select(
-    procedure_id,
-    truth_rating_scale,
-    n_statements,
-    contains("sb_")
-  )
+clean_data <- data %>% 
+  select(-data)
 
-order_levels <- plot_data %>%
-  arrange(sb_estimate) %>%
-  pull(procedure_id)
-
-plot_data_long <- plot_data %>% 
-  pivot_longer(
-    cols = matches("^(art_)?(sb_|var)"),
-    names_to = c("condition", ".value"),
-    names_pattern = "^(art_)?(sb_.*|var)"
-  ) %>% 
-  mutate(
-    condition = if_else(condition == "art_", "artificial", "control"),
-    procedure_fac = factor(procedure_id, levels = order_levels)
-    
-  )
-
-plot_data_long %>% 
-  ggplot(
-    aes(x = procedure_fac, y = sb_estimate, color = condition)) +
-    # line connecting control ↔ artificial
-    geom_line(aes(group = procedure_id), color = "grey70") +
-    # points
-    geom_point(size = 3) +
-    # manual colors
-    scale_color_manual(
-      values = c(
-        "control" = "blue",
-        "artificial" = "red"
-      )
-    ) +
-    coord_flip() +
-    labs(
-      x = "Procedure ID",
-      y = "Spearman-Brown Estimate",
-      color = "Condition",
-      title = "Effect of Artificial Condition on Reliability"
-    ) +
-    theme_minimal()
-
-
-## Plot likert data ----
-plot_data <- data %>% 
-  filter(
-    truth_rating_scale == "dichotomous",
-    has_certainty == 1
-  ) %>% 
-  select(
-    procedure_id,
-    truth_rating_scale,
-    n_statements,
-    contains("sb_")
-  )
-
-order_levels <- plot_data %>%
-  arrange(sb_estimate) %>%
-  pull(procedure_id)
-
-plot_data_long <- plot_data %>% 
-  pivot_longer(
-    cols = matches("^(art_)?(sb_|var)"),
-    names_to = c("condition", ".value"),
-    names_pattern = "^(art_)?(sb_.*|var)"
-  ) %>% 
-  mutate(
-    condition = if_else(condition == "art_", "artificial", "control"),
-    procedure_fac = factor(procedure_id, levels = order_levels)
-    
-  )
-
-plot_data_long %>% 
-  ggplot(
-    aes(x = procedure_fac, y = sb_estimate, color = condition)) +
-  # line connecting control ↔ artificial
-  geom_line(aes(group = procedure_id), color = "grey70") +
-  # points
-  geom_point(size = 3) +
-  # manual colors
-  scale_color_manual(
-    values = c(
-      "control" = "blue",
-      "artificial" = "red"
-    )
-  ) +
-  coord_flip() +
-  labs(
-    x = "Procedure ID",
-    y = "Spearman-Brown Estimate",
-    color = "Condition",
-    title = "Effect of Artificial Condition on Reliability"
-  ) +
-  theme_minimal()
-
-## Effsize plots ----
-plot_data <- data %>% 
-  filter(
-    truth_rating_scale != "dichotomous"
-  ) %>% 
-  select(
-    procedure_id,
-    truth_rating_scale,
-    n_statements,
-    contains("d_")
-  )
-
-order_levels <- plot_data %>%
-  arrange(d_estimate) %>%
-  pull(procedure_id)
-
-plot_data_long <- plot_data %>% 
-  pivot_longer(
-    cols = matches("^(art_)?(d_)"),
-    names_to = c("condition", ".value"),
-    names_pattern = "^(art_)?(d_.*)"
-  ) %>% 
-  mutate(
-    condition = if_else(condition == "art_", "artificial", "control"),
-    procedure_fac = factor(procedure_id, levels = order_levels)
-    
-  )
-
-plot_data_long %>% 
-  ggplot(
-    aes(x = procedure_fac, y = d_estimate, color = condition)) +
-  # line connecting control ↔ artificial
-  geom_line(aes(group = procedure_id), color = "grey70") +
-  # points
-  geom_point(size = 3) +
-  # manual colors
-  scale_color_manual(
-    values = c(
-      "control" = "blue",
-      "artificial" = "red"
-    )
-  ) +
-  coord_flip() +
-  labs(
-    x = "Procedure ID",
-    y = "Cohens d",
-    color = "Condition",
-    title = "Effect of Artificial Condition on Effect Size"
-  ) +
-  theme_minimal()
-
-
-## Plot likert data ----
-plot_data <- data %>% 
-  filter(
-    truth_rating_scale == "dichotomous",
-    has_certainty == 1
-  ) %>% 
-  select(
-    procedure_id,
-    truth_rating_scale,
-    n_statements,
-    contains("d_")
-  )
-
-order_levels <- plot_data %>%
-  arrange(d_estimate) %>%
-  pull(procedure_id)
-
-plot_data_long <- plot_data %>% 
-  pivot_longer(
-    cols = matches("^(art_)?(d_)"),
-    names_to = c("condition", ".value"),
-    names_pattern = "^(art_)?(d_.*)"
-  ) %>% 
-  mutate(
-    condition = if_else(condition == "art_", "artificial", "control"),
-    procedure_fac = factor(procedure_id, levels = order_levels)
-  )
-
-plot_data_long %>% 
-  ggplot(
-    aes(x = procedure_fac, y = d_estimate, color = condition)) +
-  # line connecting control ↔ artificial
-  geom_line(aes(group = procedure_id), color = "grey70") +
-  # points
-  geom_point(size = 3) +
-  # manual colors
-  scale_color_manual(
-    values = c(
-      "control" = "blue",
-      "artificial" = "red"
-    )
-  ) +
-  coord_flip() +
-  labs(
-    x = "Procedure ID",
-    y = "Cohens d",
-    color = "Condition",
-    title = "Effect of Artificial Condition on Effectsize"
-  ) +
-  theme_minimal()
-
-## Plot together data ----
-plot_data <- data %>% 
-  filter(truth_rating_scale == "likert" | has_certainty ==1) %>% 
-  select(
-    procedure_id,
-    truth_rating_scale,
-    n_statements,
-    has_certainty,
-    contains("sb_")
-  )
-
-order_levels <- plot_data %>%
-  arrange(sb_estimate) %>%
-  pull(procedure_id)
-
-plot_data_long <- plot_data %>% 
-  pivot_longer(
-    cols = matches("^(art_)?(sb_|var)"),
-    names_to = c("condition", ".value"),
-    names_pattern = "^(art_)?(sb_.*|var)"
-  ) %>% 
-  mutate(
-    condition = if_else(condition == "art_", "artificial", "control"),
-    procedure_fac = factor(procedure_id, levels = order_levels)
-    
-  ) %>% 
-  mutate(
-    scale_type = case_when(
-      truth_rating_scale == "dichotomous" & condition == "control" ~ "dichotomous",
-      truth_rating_scale == "dichotomous" & condition == "artificial" ~ "likert",
-      truth_rating_scale == "likert" & condition == "control" ~ "likert",
-      truth_rating_scale == "likert" & condition == "artificial" ~ "dichotomous"
-    )
-  )
-
-plot_data_long %>% 
-  ggplot(
-    aes(x = procedure_fac, y = sb_estimate, color = scale_type, shape = condition)) +
-  # line connecting control ↔ artificial
-  geom_line(aes(group = procedure_id), color = "grey70") +
-  # points
-  geom_point(size = 3) +
-  # manual colors
-  scale_color_manual(
-    values = c(
-      "dichotomous" = "blue",
-      "likert" = "red"
-    )
-  ) +
-  coord_flip() +
-  labs(
-    x = "Procedure ID",
-    y = "Spearman-Brown Estimate",
-    color = "Condition",
-    title = "Effect of Artificial Condition on Reliability"
-  ) +
-  theme_minimal()
+saveRDS(clean_data, file = "data/reliability_data.Rdata")
