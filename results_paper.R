@@ -4,6 +4,9 @@ library(acdcquery)
 library(metafor)
 source("helper_functions.R")
 
+scale_color <- "#FF6B6B"
+dichotomous_color <- "#4682B4"
+
 # Get data ----
 data <- readRDS("data/reliability_data.Rdata")
 conn <- connect_to_db("data/ted.db")
@@ -203,12 +206,48 @@ plot_data_long <- plot_data %>%
   mutate(
     scale_type = case_when(
       truth_rating_scale == "dichotomous" & condition == "control" ~ "dichotomous",
-      truth_rating_scale == "dichotomous" & condition == "artificial" ~ "likert",
-      truth_rating_scale == "likert" & condition == "control" ~ "likert",
+      truth_rating_scale == "dichotomous" & condition == "artificial" ~ "scale",
+      truth_rating_scale == "likert" & condition == "control" ~ "scale",
       truth_rating_scale == "likert" & condition == "artificial" ~ "dichotomous",
-      truth_rating_scale == "range" & condition == "control" ~ "range",
+      truth_rating_scale == "range" & condition == "control" ~ "scale",
       truth_rating_scale == "range" & condition == "artificial" ~ "dichotomous",
     )
+  ) %>% mutate(
+    scale_type = factor(
+      scale_type,
+      levels = c("dichotomous", "scale"),
+      labels = c("dichotomous", "scale")
+    ),
+    condition = factor(
+      condition,
+      levels = c("control", "artificial"),
+      labels = c("control", "artificial")
+    )
+  )
+
+improve_df <- plot_data_long %>%
+  dplyr::select(procedure_id, condition, sb_estimate) %>%
+  tidyr::pivot_wider(
+    names_from = condition,
+    values_from = sb_estimate
+  ) %>%
+  dplyr::mutate(
+    diff = artificial - control,
+    improve = diff > 0
+  )
+
+star_df <- plot_data_long %>%
+  dplyr::filter(condition == "artificial") %>%
+  dplyr::left_join(
+    improve_df %>% dplyr::select(procedure_id, improve),
+    by = "procedure_id"
+  ) %>%
+  filter(improve == TRUE) %>% 
+  mutate(
+    sb_estimate = 0.95
+  )%>% 
+  mutate(
+    scale_type = ifelse(truth_rating_scale.x == "dichotomous", "dichotomous", "scale")
   )
 
 plot_data_long %>% 
@@ -217,23 +256,43 @@ plot_data_long %>%
   # line connecting control ↔ artificial
   geom_line(aes(group = procedure_id), color = "grey70") +
   # points
-  geom_point(size = 3) +
+  geom_point(size = 5) +
   # manual colors
   scale_color_manual(
     values = c(
-      "dichotomous" = "blue",
-      "likert" = "red",
-      "range" = "green"
+      "dichotomous" = dichotomous_color,
+      "scale" = scale_color
     )
   ) +
+  # scale_shape_manual(
+  #   values = c(
+  #     "control" = dichotomous_color,
+  #     "artificial" = scale_color
+  #   )
+  # ) +
+  geom_text(
+    data = star_df,
+    aes(x = procedure_fac, y = sb_estimate, color = scale_type),
+    label = "*",
+    size = 6
+  )+ 
   coord_flip() +
   labs(
     x = "Procedure ID",
     y = "Spearman-Brown Estimate",
-    color = "Condition",
-    title = "Effect of Artificial Condition on Reliability"
+    color = "Scale Type",
+    shape = "Condition",
+    # title = "Effect of Artificial Condition on Reliability"
   ) +
-  theme_minimal()
+  ylim(-0.5, 1)+
+  theme_minimal()+
+  theme(
+    text = element_text(family = "Times New Roman", colour = "black"),
+    axis.text = element_text(family = "Times New Roman", size = 20, color = "black"),
+    axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
+    legend.text = element_text(family = "Times New Roman"),
+    legend.title = element_text(family = "Times New Roman")
+  )
 
 ## Plot effect of artificial change data effsize ----
 plot_data <- data %>% 
@@ -264,13 +323,50 @@ plot_data_long <- plot_data %>%
   mutate(
     scale_type = case_when(
       truth_rating_scale == "dichotomous" & condition == "control" ~ "dichotomous",
-      truth_rating_scale == "dichotomous" & condition == "artificial" ~ "likert",
-      truth_rating_scale == "likert" & condition == "control" ~ "likert",
+      truth_rating_scale == "dichotomous" & condition == "artificial" ~ "scale",
+      truth_rating_scale == "likert" & condition == "control" ~ "scale",
       truth_rating_scale == "likert" & condition == "artificial" ~ "dichotomous",
-      truth_rating_scale == "range" & condition == "control" ~ "range",
+      truth_rating_scale == "range" & condition == "control" ~ "scale",
       truth_rating_scale == "range" & condition == "artificial" ~ "dichotomous",
     )
+  ) %>% mutate(
+    scale_type = factor(
+      scale_type,
+      levels = c("dichotomous", "scale"),
+      labels = c("dichotomous", "scale")
+    ),
+    condition = factor(
+      condition,
+      levels = c("control", "artificial"),
+      labels = c("control", "artificial")
+    )
   )
+
+improve_df <- plot_data_long %>%
+  dplyr::select(procedure_id, condition, d_estimate) %>%
+  tidyr::pivot_wider(
+    names_from = condition,
+    values_from = d_estimate
+  ) %>%
+  dplyr::mutate(
+    diff = artificial - control,
+    improve = diff > 0
+  )
+
+star_df <- plot_data_long %>%
+  dplyr::filter(condition == "artificial") %>%
+  dplyr::left_join(
+    improve_df %>% dplyr::select(procedure_id, improve),
+    by = "procedure_id"
+  ) %>%
+  filter(improve == TRUE) %>% 
+  mutate(
+    d_estimate = 1.4
+  )%>% 
+  mutate(
+    scale_type = ifelse(truth_rating_scale.x == "dichotomous", "dichotomous", "scale")
+  )
+
 
 plot_data_long %>% 
   ggplot(
@@ -278,15 +374,20 @@ plot_data_long %>%
   # line connecting control ↔ artificial
   geom_line(aes(group = procedure_id), color = "grey70") +
   # points
-  geom_point(size = 3) +
+  geom_point(size = 5) +
   # manual colors
   scale_color_manual(
     values = c(
-      "dichotomous" = "blue",
-      "likert" = "red",
-      "range" = "green"
-    )
+      "dichotomous" = dichotomous_color,
+      "scale" = scale_color
+      )
   ) +
+  geom_text(
+    data = star_df,
+    aes(x = procedure_fac, y = d_estimate, color = scale_type),
+    label = "*",
+    size = 6
+  )+ 
   coord_flip() +
   labs(
     x = "Procedure ID",
@@ -294,7 +395,16 @@ plot_data_long %>%
     color = "Condition",
     title = "Effect of Artificial Condition on Reliability"
   ) +
-  theme_minimal()
+  theme_minimal()+
+  ylim(-0.5, 1.5)+
+  theme_minimal()+
+  theme(
+    text = element_text(family = "Times New Roman", colour = "black"),
+    axis.text = element_text(family = "Times New Roman", size = 20, color = "black"),
+    axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
+    legend.text = element_text(family = "Times New Roman"),
+    legend.title = element_text(family = "Times New Roman")
+  )
 
 ## Comparing comparable studies: ----
 # Here select some based on criteria suggested by Zajdler (same n_statements, same repetition_time)
