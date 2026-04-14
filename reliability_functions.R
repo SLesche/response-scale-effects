@@ -5,10 +5,15 @@ source("helper_functions.R")
 analysis_data <- data.table::fread("data/analysis_data.csv")
 
 prep <- analysis_data %>% 
+  filter(
+    repetition_time < 20,
+    n_statements > 50,
+    n_statements < 70
+  ) %>% 
   group_by(procedure_id, truth_rating_scale, n_statements) %>% 
   nest()
 
-data <- prep$data[[1]]
+# data <- prep$data[[1]]
 
 data <- prep %>% 
   mutate(

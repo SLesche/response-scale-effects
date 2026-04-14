@@ -1,4 +1,4 @@
-procedure_test = 95
+procedure_test = 93
 
 test_s <- data %>% 
   filter(procedure_id == procedure_test) %>% 
