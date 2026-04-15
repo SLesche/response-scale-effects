@@ -228,7 +228,7 @@ plot_sb_comparison <- function(data){
   star_df <- plot_data_long %>%
     dplyr::filter(condition == "artificial") %>%
     dplyr::left_join(
-      improve_df %>% dplyr::select(procedure_id, improve),
+      improve_df %>% dplyr::select(procedure_id, improve, control),
       by = "procedure_id"
     ) %>%
     filter(improve == TRUE) %>% 
@@ -236,7 +236,7 @@ plot_sb_comparison <- function(data){
       sb_estimate = 0.95
     )%>% 
     mutate(
-      scale_type = ifelse(truth_rating_scale.x == "dichotomous", "dichotomous", "scale")
+      scale_type = ifelse(truth_rating_scale.x == "dichotomous", "scale", "dichotomous")
     )
   
   plot_data_long %>% 
@@ -261,9 +261,9 @@ plot_sb_comparison <- function(data){
     # ) +
     geom_text(
       data = star_df,
-      aes(x = procedure_fac, y = sb_estimate, color = scale_type),
-      label = "*",
-      size = 6
+      aes(x = procedure_fac, y = sb_estimate, color = ifelse(control < 0.2, "grey",scale_type)),
+      label = "+",
+      size = 7
     )+ 
     scale_x_discrete(guide = guide_axis(n.dodge = 2))+
     coord_flip() +
@@ -347,7 +347,7 @@ plot_d_comparison <- function(data){
   star_df <- plot_data_long %>%
     dplyr::filter(condition == "artificial") %>%
     dplyr::left_join(
-      improve_df %>% dplyr::select(procedure_id, improve),
+      improve_df %>% dplyr::select(procedure_id, improve, control),
       by = "procedure_id"
     ) %>%
     filter(improve == TRUE) %>% 
@@ -355,7 +355,7 @@ plot_d_comparison <- function(data){
       d_estimate = 1.4
     )%>% 
     mutate(
-      scale_type = ifelse(truth_rating_scale.x == "dichotomous", "dichotomous", "scale")
+      scale_type = ifelse(truth_rating_scale.x == "dichotomous", "scale", "dichotomous")
     )
   
   
@@ -376,8 +376,8 @@ plot_d_comparison <- function(data){
     geom_text(
       data = star_df,
       aes(x = procedure_fac, y = d_estimate, color = scale_type),
-      label = "*",
-      size = 6
+      label = "+",
+      size = 7
     )+ 
     scale_x_discrete(guide = guide_axis(n.dodge = 2))+
     coord_flip() +
@@ -385,7 +385,7 @@ plot_d_comparison <- function(data){
       x = "Procedure ID",
       y = "Spearman-Brown Estimate",
       color = "Condition",
-      title = "Effect of Artificial Condition on Reliability"
+      # title = "Effect of Artificial Condition on Reliability"
     ) +
     theme_minimal()+
     ylim(-0.5, 1.5)+

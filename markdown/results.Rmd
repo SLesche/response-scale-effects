@@ -7,12 +7,12 @@ You can find an overview of the effect size and reliability estimates in the res
 ```{r}
 average_effsize_by_scaletype <- average_effsize_by_scaletype %>% 
   mutate(
-    print = paste0(round(estimate, 2), " [", round(ci.lb, 2), ", ", round(ci.ub, 2), "]")
+    print = paste0(round(estimate, 2), ", 95% CI [", round(ci.lb, 2), ", ", round(ci.ub, 2), "]")
   )
 
 average_rel_by_scaletype <- average_rel_by_scaletype %>% 
   mutate(
-    print = paste0(round(estimate, 2), " [", round(ci.lb, 2), ", ", round(ci.ub, 2), "]")
+    print = paste0(round(estimate, 2), ", 95% CI [", round(ci.lb, 2), ", ", round(ci.ub, 2), "]")
   )
 ```
 
@@ -25,7 +25,8 @@ The meta-analysis revealed no significant main or interaction effects of respons
 
 The impact of artificial change in scale type is illustrated in Figure \@ref(fig:eff-change-plot).
 
-(ref:eff-change-plot) Impact of artificial change in response format on effect size
+(ref:eff-change-plot) Impact of artificial change in response format on effect size. *Note.* Each point represents the estimated effect size (Cohen’s d for repeated measures) for a given procedure. Points are ordered by the observed effect size. Circles indicate the original (observed) data, whereas triangles represent counterfactual estimates obtained after artificially changing the response format. Blue denotes dichotomous response formats and red denotes scale-based formats. For each procedure, points are connected to illustrate the change in effect size under the transformation. Plus signs indicate cases in which the artificial change led to an increase in effect size; the color of the symbol corresponds to the response format into which the value was transformed.
+
 ```{r eff-change-plot,  fig.cap = paste("(ref:eff-change-plot)"), out.width="90%"}
 knitr::include_graphics("images/eff_change_plot.jpg")
 ```
@@ -35,17 +36,18 @@ Meta-analysis revealed that the average reliability in studies using a dichotomo
 
 In the counterfactual datasets, the average reliability for artificially scaled response formats was  $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "scale", condition == "artificial") %>% pull(print)`, the average reliability for artificially dichotomized response formats was $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "dichotomous", condition == "artificial") %>% pull(print)`.
 
-The meta-analysis revealed a significant interaction effect $b =$ `r res_sb$b[4] %>% apa_num()` ($p =$ `r res_sb$pval[4] %>% apa_p()`)  between response format and condition on the reliability. While artificially dichotomizing scale-based response formats decreases observed reliability, artificially scaling dichotomous response formats using subsequent certainty ratings improved reliability. No other effects were significant.
+The meta-analysis revealed a significant interaction effect $b =$ `r res_sb$b[4] %>% apa_num()`, 95% CI `r paste0("[", res_sb$ci.lb[4] %>% apa_num(), ", ", res_sb$ci.ub[4] %>% apa_num(), "]")` ($p =$ `r res_sb$pval[4] %>% apa_p()`)  between response format and condition on the reliability. While artificially dichotomizing scale-based response formats decreases observed reliability, artificially scaling dichotomous response formats using subsequent certainty ratings improved reliability. No other effects were significant.
 
 The impact of artificial change in scale type on reliability is illustrated in Figure \@ref(fig:rel-change-plot). 
-(ref:rel-change-plot) Impact of artificial change in response format on reliability
+(ref:rel-change-plot) Impact of artificial change in response format on reliability. *Note.* Each point represents the reliability (average Spearman-Brown corrected split-half correlation) for a given procedure. Points are ordered by the observed reliability. Circles indicate the original (observed) data, whereas triangles represent counterfactual estimates obtained after artificially changing the response format. Blue denotes dichotomous response formats and red denotes scale-based formats. For each procedure, points are connected to illustrate the change in reliability under the transformation. Plus signs indicate cases in which the artificial change led to an increase in reliability; the color of the symbol corresponds to the response format into which the value was transformed.
+
 ```{r rel-change-plot,  fig.cap = paste("(ref:rel-change-plot)"), out.width="90%"}
 knitr::include_graphics("images/rel_change_plot.jpg")
 ```
 
 Following @zajdler2025psychometrics, we expected certain experimental settings—particularly the length of the retention interval—to negatively impact the reliability of ITE scores. Because these settings may be confounded with the chosen response format, we restricted our analyses to a subset of data meeting the following criteria: studies with 40 to 80 statements (with 60 being the only available size for dichotomous datasets that could be transformed), conducted within a single session, and without truth judgments during the exposure phase. This subset of data, along with the impact of artificially changing the response format on reliability, is illustrated in Figure \@ref(fig:matched-rel-change-plot).
 
-(ref:matched-rel-change-plot) Impact of artificial change in response format on reliability (filtered data)
+(ref:matched-rel-change-plot) Impact of artificial change in response format on reliability (filtered data). *Note.* Each point represents the reliability (average Spearman-Brown corrected split-half correlation) for a given procedure. Points are ordered by the observed reliability. Only procedures with 40 to 80 statements in the judgment phase, conducted within the same session as exposure, and without truth judgments during the exposure phase were included. Circles indicate the original (observed) data, whereas triangles represent counterfactual estimates obtained after artificially changing the response format. Blue denotes dichotomous response formats and red denotes scale-based formats. For each procedure, points are connected to illustrate the change in reliability under the transformation. Plus signs indicate cases in which the artificial change led to an increase in reliability; the color of the symbol corresponds to the response format into which the value was transformed.
 ```{r matched-rel-change-plot,  fig.cap = paste("(ref:rel-change-plot)"), out.width="90%"}
 knitr::include_graphics("images/matched_rel_change_plot.jpg")
 ```
