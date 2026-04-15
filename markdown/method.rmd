@@ -9,6 +9,30 @@ if (compute_new) source("prepare_results.R")
 source("results_paper.R")
 ```
 
-Source scripts here
+In order to collect evidence from as many datasets as possible, we retrieved data from the Truth Effect Database (TED), an open database for research focusing on the illusory truth effect (ITE) [@lesche2026introducing]. In total, we extracted data from `r n_publications_original` publications, contributing `r n_studies_original` studies, `r n_participants_original` participants, and a total of `r n_trials_original` trials. We only included data from the judgment phase, excluded missing data in either the response or the repetition status and excluded studies where the ITE was measured between-participants.
 
-Method stuff
+```{r}
+study_overview <- study_overview %>% 
+  filter(study_id %in% unique(analysis_data$study_id)) 
+
+age_data <- study_overview %>% 
+  mutate(participant_age = ifelse(participant_age == 99, NA, participant_age)) %>% 
+  filter(!is.na(participant_age), !is.na(n_participants))
+
+n_dichotomous <- sum(study_overview$truth_rating_scale == "dichotomous")
+n_likert <- sum(study_overview$truth_rating_scale == "likert")
+n_range <- sum(study_overview$truth_rating_scale == "range")
+n_scale <- n_likert + n_range
+
+```
+
+The number of participants ranged from `r min(study_overview$n_participants, na.rm = TRUE)` to `r max(study_overview$n_participants, na.rm = TRUE)`. On average, studies included `r mean(study_overview$n_participants, na.rm = TRUE)` participants ($\mu_{age} =$ `r weighted.mean(age_data$participant_age, age_data$n_participants, na.rm = TRUE)`,$\sigma_{age} =$ `r DescTools::SD(age_data$participant_age, weights = age_data$n_participants, na.rm = TRUE)`). 
+
+Of the `r length(unique(analysis_data$study_id)) %>% apa_num()` remaining studies, `r n_dichotomous` employed a dichotomous response format to truth judgments, whereas `r n_scale` studies employed a scale response format (`r n_likert` studies likert scale and `r n_range` a slider from 0-100).
+
+## Analysis
+We focus our analyses on two key variables: effect size and reliability.
+
+Describe how effsize and reliability was calculated
+
+Describe how the artificial change in response scale was done

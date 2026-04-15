@@ -52,6 +52,11 @@ full_data <- query_db(
   "observation_table"
 )
 
+n_publications_original <- length(unique(full_data$publication_id))
+n_studies_original <- length(unique(full_data$study_id))
+n_participants_original <- length(unique(full_data$subject))
+n_trials_original <- nrow(full_data)
+
 references_table <- query_db(
   conn,
   all_argument,
