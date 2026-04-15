@@ -23,7 +23,7 @@ In the counterfactual datasets (i.e. scaling dichotomous responses and dichotomi
 
 The meta-analysis revealed no significant main or interaction effects of response format or condition on the effect size. 
 
-The impact of artificial change in scale type is illustrated in Figure \@ref(fig:eff-change-plot).
+The impact of artificial change in scale type on the effect size of the ITE is illustrated in Figure \@ref(fig:eff-change-plot).
 
 (ref:eff-change-plot) Impact of artificial change in response format on effect size. *Note.* Each point represents the estimated effect size (Cohen’s d for repeated measures) for a given procedure. Points are ordered by the observed effect size. Circles indicate the original (observed) data, whereas triangles represent counterfactual estimates obtained after artificially changing the response format. Blue denotes dichotomous response formats and red denotes scale-based formats. For each procedure, points are connected to illustrate the change in effect size under the transformation. Plus signs indicate cases in which the artificial change led to an increase in effect size; the color of the symbol corresponds to the response format into which the value was transformed.
 

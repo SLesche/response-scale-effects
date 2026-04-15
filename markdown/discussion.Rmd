@@ -1,2 +1,15 @@
 # Discussion
-Here you can discuss your results.
+Some notes:
+
+Overall: Reliability is higher for scale formats than dichotomous formats (although not significant in meta analysis). If certainty information is available, higher reliability can be achieved using that
+
+our work is also an extension of Zajdler & Schnuerch. We could not use their method, because no trial-level variance can be readily estimated for models of dichotomous data. Still we hope to provide an extension here investigating the reliability of ITE in dichotomous data
+
+No effect of response format on the effect size of the truth effect.
+
+In general, likert scale responses have both judgments of truth and certainty (partial truth makes little sense psychologically). It is worthwhile to separate those whenever possible. This work also demonstrates that they can be recombined to achieve again good reliability
+
+Also, splitting them up to a binary response and a likert response allows use of cognitive modeling for binary decision tasks like the DDM, which is beneficial (cite Annika paper).
+
+## Limitations:
+of course, also limited dichotomous data with certainty information (only studies by Stump et al.). Unsure how this might generalize. But we hope our work sparks further adoption of the approach of separate responses.
