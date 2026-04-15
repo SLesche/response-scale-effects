@@ -6,3 +6,4 @@ data/ted.db
 model/posterior_variances.rds
 data/analysis_data.csv
 data/reliability_data.Rdata
+markdown/output/apa7_document.docx

@@ -6,23 +6,53 @@
 
 ```{r setup-libraries}
 # think about calling renv here to make sure everyone has the same packages installed
-list.of.packages <- c("tidyverse", "rio", "rmarkdown", "papaja", "knitr")
+list.of.packages <- c("tidyverse", "rmarkdown", "papaja", "knitr", "acdcquery", "splithalf", "metafor")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
 library(papaja)
 library(tidyverse)
-library(rio)
 library(rmarkdown)
 library(knitr)
+library(acdcquery)
 
 r_refs("markdown/r-references.bib")
 
 r_citations <- cite_r(
   file = "markdown/r-references.bib",
-  pkgs = c("papaja", "tidyverse", "knitr"),
+  pkgs = c("papaja", "tidyverse", "knitr", "acdcquery", "metafor", "splithalf"),
   omit = FALSE,
   footnote = TRUE
   )
 
 ```
+
+
+```{r setup-print-percent}
+print_percent <- function(percent){
+  apa_msg = papaja::apa_num(percent)
+  final = paste0(apa_msg, " %")
+  return(final)
+}
+
+print_freq_percent <- function(freq){
+  percent = freq*100
+  apa_msg = papaja::apa_num(percent)
+  final = paste0(apa_msg, " %")
+  return(final)
+}
+
+
+print_rel <- function(rel){
+  return(paste0("$\alpha~=~", papaja::apa_num(rel), "$"))
+}
+
+print_icc <- function(icc){
+  return(paste0("$ICC~=~", papaja::apa_num(icc), "$"))
+}
+```
+```{r method-source-data-prep, child = "markdown/data_prep.rmd"}
+```
+```{r method-source-data-anal, child = "markdown/data_analysis.rmd"}
+```
+

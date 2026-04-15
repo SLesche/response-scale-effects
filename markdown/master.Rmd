@@ -1,53 +1,40 @@
 ---
-title             : "Some Long Title - Maybe something more specific"
-shorttitle        : "Short Title"
+title             : "Some long title"
+shorttitle        : "SHORT TITLE"
 
 author: 
-  - name          : "Author 1"
+  - name          : "Sven Lesche"
     affiliation   : "1"
     corresponding : yes    # Define only one corresponding author
-    address       : "Street Str. 1"
-    email         : "author.one@mail.com"
-    role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
-      - "Conceptualization"
-      - "Writing - Original Draft Preparation"
-      - "Writing - Review & Editing"
-  - name          : "Author 2"
+    address       : "Hauptstraße 47-51, 69117 Heidelberg"
+    email         : "sven.lesche@psychologie.uni-heidelberg.de"
+    # role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
+    #   - "Conceptualization"
+    #   - "Writing - Original Draft Preparation"
+    #   - "Writing - Review & Editing"
+  - name          : "Annika Stump"
     affiliation   : "2"
-    role:
-      - "Supervision"
-
+    # role:
+    #   - "Conceptualization"
+    #   - "Writing - Original Draft Preparation"
+    #   - "Writing - Review & Editing"
 affiliation:
   - id            : "1"
     institution   : "Ruprecht-Karls-University Heidelberg"
   - id            : "2"
-    institution   : "Konstanz Business School"
+    institution   : "Albert-Ludwigs-University Freiburg"
   # add a second id using this syntax
 
 authornote: |
-  Author Notes go here.
+  
 
 abstract: |
-  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
+  Abstract
   
-  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
-  
-  One sentence clearly stating the **general problem** being addressed by  this particular study.
-  
-  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
-  
-  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
-  
-  One or two sentences to put the results into a more **general context**.
-  
-  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
-  
-  <!-- https://tinyurl.com/ybremelq -->
-  
-keywords          : "keyword, more keyword, crazy keyword"
-wordcount         : "X"
+keywords          : "keyword"
+# wordcount         : "X"
 
-bibliography      : ["r-references.bib", "pes_lib.bib"] # put your ref files here
+bibliography      : ["r-references.bib", "truth_effect.bib"] # put your ref files here
 
 floatsintext      : yes # for pics in text
 linenumbers       : no
@@ -98,6 +85,9 @@ knitr::opts_chunk$set(ft.keepnext = TRUE,
 set.seed(1234)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed) # this adds random seed to all chunks
 knitr::opts_chunk$set(autodep = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+
 knitr::dep_auto()
 ```
 

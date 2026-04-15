@@ -1,12 +1,6 @@
 # Results
-Write your results here. You can add chunks for additional analysis. But to ensure readability, I would recommend conducting all anaylsis inside the appropriately named children.
 
-You can cite R-packages used by calling the object `r_citiations`. If you want to only cite R itself within your text, but refer to all packages used in a footnote, call `r_citations$r` in text and `r_citations$pkgs` after the end of the sentence. This report was generated using `r r_citations$r`. `r r_citations$pkgs`
+All analysis were conducted using `r r_citations$r`. `r r_citations$pkgs`.
 
-You can print tables using the wonderful `apa_table` command provided to you by `papaja` (see Table \@ref(tab:results-example-table)). Here it is best to set the caption using the `caption` argument provided by `apa_table()`.
+In the current version of the manuscript, we included `r length(unique(analysis_data$study_id)) %>% apa_num()` studies from `r length(unique(analysis_data$publication_id)) %>% apa_num()` publications, spanning `r length(unique(analysis_data$subject)) %>% apa_num()` participants contributing `r nrow(analysis_data) %>% apa_num()` trials. A complete list of the included publications can be found in Table \@ref(tab:table-db-overview).
 
-```{r results-example-table}
-apa_table(best_cars_table, caption = "The top five cars by Miles Per Gallon (MPG)", note = "This table was generated using papaja::apa_table()")
-```
-
-As you can see, the best car is `r best_car$car`.
