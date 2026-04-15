@@ -1,14 +1,6 @@
 library(tidyverse)
 library(acdcquery)
 
-# load packages
-library(gridExtra)
-library(ggridges)
-library(lemon)
-library(patchwork)
-library(viridis)
-library(xtable)
-
 # download_ted("data/")
 check_ted("data/ted.db")
 conn <- connect_to_db("data/ted.db")
