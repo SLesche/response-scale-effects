@@ -28,5 +28,5 @@ overview_table_data_clean <- overview_table_data %>%
   select(publication, everything())
 
 apa_table(overview_table_data_clean,
-          caption = "Overview of data included")
+          caption = "Overview of data included in the analysis Note. The table summarizes key characteristics and results for each procedure, including publication, procedure ID, number of participants (n_participants), and number of statements (n_statements). truth_rating_scale indicates the response format used in the original data (dichotomous vs. likert vs. range). d_control and d_art denote effect size estimates (Cohen’s d for repeated measures) for the original (control) and counterfactual (artificially transformed) data, respectively. rel_control and rel_art represent the corresponding reliability estimates (average Spearman–Brown corrected split-half correlations).")
 ```
