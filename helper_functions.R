@@ -280,8 +280,8 @@ plot_sb_comparison <- function(data){
       text = element_text(family = "Times New Roman", colour = "black"),
       axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
       axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
-      legend.text = element_text(family = "Times New Roman"),
-      legend.title = element_text(family = "Times New Roman")
+      legend.text = element_text(family = "Times New Roman", size = 20),
+      legend.title = element_text(family = "Times New Roman", size = 20)
     )
 }
 
@@ -394,7 +394,7 @@ plot_d_comparison <- function(data){
       text = element_text(family = "Times New Roman", colour = "black"),
       axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
       axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
-      legend.text = element_text(family = "Times New Roman"),
-      legend.title = element_text(family = "Times New Roman")
+      legend.text = element_text(family = "Times New Roman", size = 20),
+      legend.title = element_text(family = "Times New Roman", size = 20)
     )
 }

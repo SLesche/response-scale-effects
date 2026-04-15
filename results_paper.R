@@ -45,6 +45,7 @@ overview_table_data <- data %>%
   select(procedure_id,
          publication_id,
          authors,
+         has_art,
          conducted,
          n_statements,
          n_participants,
@@ -61,6 +62,10 @@ overview_table_data <- data %>%
     d_art = paste0(art_d_estimate, " [", art_d_low, ", ", art_d_high, "]"),
     rel_control = paste0(sb_estimate, " [", sb_low, ", ", sb_high, "]"),
     rel_art = paste0(art_sb_estimate, " [", art_sb_low, ", ", art_sb_high, "]"),
+  ) %>% 
+  mutate(
+    d_art = ifelse(has_art, d_art, "N/A"),
+    rel_art = ifelse(has_art, rel_art, "N/A")
   ) %>% 
   select(
     publication_id,

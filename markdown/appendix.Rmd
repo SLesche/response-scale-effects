@@ -1,6 +1,32 @@
 # Included data
-(ref:table-db-overview) Publications included in TED
-```{r table-db-overview}
-apa_table(references_table %>% filter(publication_id %in% unique(analysis_data$publication_id)),
-          caption = "Publications included in TED")
+
+(ref:table-effsize-overview) Overview of data included
+
+```{r table-effsize-overview}
+overview_table_data_clean <- overview_table_data %>% 
+  ungroup() %>% 
+  select(
+    authors,
+    conducted,
+    procedure_id,
+    n_participants,
+    n_statements,
+    truth_rating_scale,
+    d_control,
+    d_art,
+    rel_control,
+    rel_art
+  ) %>% 
+  mutate(
+    conducted = as.character(round(conducted, 0)),
+    procedure_id = as.character(round(procedure_id, 0)),
+    n_participants = as.character(round(n_participants, 0)),
+    n_statements = as.character(round(n_statements, 0)),
+    publication = paste0(authors, " (", conducted, ")")
+  ) %>% 
+  select(-authors, -conducted) %>% 
+  select(publication, everything())
+
+apa_table(overview_table_data_clean,
+          caption = "Overview of data included")
 ```
