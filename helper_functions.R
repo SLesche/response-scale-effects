@@ -165,3 +165,236 @@ make_2x2_from_coefs <- function(model) {
     ci.ub = est + 1.96 * se
   )
 }
+
+plot_sb_comparison <- function(data){
+  plot_data <- data %>% 
+    filter(has_art == 1) %>% 
+    select(
+      procedure_id,
+      truth_rating_scale,
+      n_statements,
+      has_certainty,
+      contains("sb_")
+    )
+  
+  order_levels <- plot_data %>%
+    arrange(sb_estimate) %>%
+    pull(procedure_id)
+  
+  plot_data_long <- plot_data %>% 
+    pivot_longer(
+      cols = matches("^(art_)?(sb_|var)"),
+      names_to = c("condition", ".value"),
+      names_pattern = "^(art_)?(sb_.*|var)"
+    ) %>% 
+    mutate(
+      condition = if_else(condition == "art_", "artificial", "control"),
+      procedure_fac = factor(procedure_id, levels = order_levels)
+      
+    ) %>% 
+    mutate(
+      scale_type = case_when(
+        truth_rating_scale == "dichotomous" & condition == "control" ~ "dichotomous",
+        truth_rating_scale == "dichotomous" & condition == "artificial" ~ "scale",
+        truth_rating_scale == "likert" & condition == "control" ~ "scale",
+        truth_rating_scale == "likert" & condition == "artificial" ~ "dichotomous",
+        truth_rating_scale == "range" & condition == "control" ~ "scale",
+        truth_rating_scale == "range" & condition == "artificial" ~ "dichotomous",
+      )
+    ) %>% mutate(
+      scale_type = factor(
+        scale_type,
+        levels = c("dichotomous", "scale"),
+        labels = c("dichotomous", "scale")
+      ),
+      condition = factor(
+        condition,
+        levels = c("control", "artificial"),
+        labels = c("control", "artificial")
+      )
+    )
+  
+  improve_df <- plot_data_long %>%
+    dplyr::select(procedure_id, condition, sb_estimate) %>%
+    tidyr::pivot_wider(
+      names_from = condition,
+      values_from = sb_estimate
+    ) %>%
+    dplyr::mutate(
+      diff = artificial - control,
+      improve = diff > 0
+    )
+  
+  star_df <- plot_data_long %>%
+    dplyr::filter(condition == "artificial") %>%
+    dplyr::left_join(
+      improve_df %>% dplyr::select(procedure_id, improve),
+      by = "procedure_id"
+    ) %>%
+    filter(improve == TRUE) %>% 
+    mutate(
+      sb_estimate = 0.95
+    )%>% 
+    mutate(
+      scale_type = ifelse(truth_rating_scale.x == "dichotomous", "dichotomous", "scale")
+    )
+  
+  plot_data_long %>% 
+    ggplot(
+      aes(x = procedure_fac, y = sb_estimate, color = scale_type, shape = condition)) +
+    # line connecting control ↔ artificial
+    geom_line(aes(group = procedure_id), color = "grey70") +
+    # points
+    geom_point(size = 5) +
+    # manual colors
+    scale_color_manual(
+      values = c(
+        "dichotomous" = dichotomous_color,
+        "scale" = scale_color
+      )
+    ) +
+    # scale_shape_manual(
+    #   values = c(
+    #     "control" = dichotomous_color,
+    #     "artificial" = scale_color
+    #   )
+    # ) +
+    geom_text(
+      data = star_df,
+      aes(x = procedure_fac, y = sb_estimate, color = scale_type),
+      label = "*",
+      size = 6
+    )+ 
+    scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+    coord_flip() +
+    labs(
+      x = "Procedure ID",
+      y = "Spearman-Brown Estimate",
+      color = "Scale Type",
+      shape = "Condition",
+      # title = "Effect of Artificial Condition on Reliability"
+    ) +
+    ylim(-0.5, 1)+
+    theme_minimal()+
+    theme(
+      text = element_text(family = "Times New Roman", colour = "black"),
+      axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
+      axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
+      legend.text = element_text(family = "Times New Roman"),
+      legend.title = element_text(family = "Times New Roman")
+    )
+}
+
+plot_d_comparison <- function(data){
+  plot_data <- data %>% 
+    filter(has_art == 1) %>% 
+    select(
+      procedure_id,
+      truth_rating_scale,
+      n_statements,
+      has_certainty,
+      contains("d_")
+    )
+  
+  order_levels <- plot_data %>%
+    arrange(d_estimate) %>%
+    pull(procedure_id)
+  
+  plot_data_long <- plot_data %>% 
+    pivot_longer(
+      cols = matches("^(art_)?(d_|var)"),
+      names_to = c("condition", ".value"),
+      names_pattern = "^(art_)?(d_.*|var)"
+    ) %>% 
+    mutate(
+      condition = if_else(condition == "art_", "artificial", "control"),
+      procedure_fac = factor(procedure_id, levels = order_levels)
+      
+    ) %>% 
+    mutate(
+      scale_type = case_when(
+        truth_rating_scale == "dichotomous" & condition == "control" ~ "dichotomous",
+        truth_rating_scale == "dichotomous" & condition == "artificial" ~ "scale",
+        truth_rating_scale == "likert" & condition == "control" ~ "scale",
+        truth_rating_scale == "likert" & condition == "artificial" ~ "dichotomous",
+        truth_rating_scale == "range" & condition == "control" ~ "scale",
+        truth_rating_scale == "range" & condition == "artificial" ~ "dichotomous",
+      )
+    ) %>% mutate(
+      scale_type = factor(
+        scale_type,
+        levels = c("dichotomous", "scale"),
+        labels = c("dichotomous", "scale")
+      ),
+      condition = factor(
+        condition,
+        levels = c("control", "artificial"),
+        labels = c("control", "artificial")
+      )
+    )
+  
+  improve_df <- plot_data_long %>%
+    dplyr::select(procedure_id, condition, d_estimate) %>%
+    tidyr::pivot_wider(
+      names_from = condition,
+      values_from = d_estimate
+    ) %>%
+    dplyr::mutate(
+      diff = artificial - control,
+      improve = diff > 0
+    )
+  
+  star_df <- plot_data_long %>%
+    dplyr::filter(condition == "artificial") %>%
+    dplyr::left_join(
+      improve_df %>% dplyr::select(procedure_id, improve),
+      by = "procedure_id"
+    ) %>%
+    filter(improve == TRUE) %>% 
+    mutate(
+      d_estimate = 1.4
+    )%>% 
+    mutate(
+      scale_type = ifelse(truth_rating_scale.x == "dichotomous", "dichotomous", "scale")
+    )
+  
+  
+  plot_data_long %>% 
+    ggplot(
+      aes(x = procedure_fac, y = d_estimate, color = scale_type, shape = condition)) +
+    # line connecting control ↔ artificial
+    geom_line(aes(group = procedure_id), color = "grey70") +
+    # points
+    geom_point(size = 5) +
+    # manual colors
+    scale_color_manual(
+      values = c(
+        "dichotomous" = dichotomous_color,
+        "scale" = scale_color
+      )
+    ) +
+    geom_text(
+      data = star_df,
+      aes(x = procedure_fac, y = d_estimate, color = scale_type),
+      label = "*",
+      size = 6
+    )+ 
+    scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+    coord_flip() +
+    labs(
+      x = "Procedure ID",
+      y = "Spearman-Brown Estimate",
+      color = "Condition",
+      title = "Effect of Artificial Condition on Reliability"
+    ) +
+    theme_minimal()+
+    ylim(-0.5, 1.5)+
+    theme_minimal()+
+    theme(
+      text = element_text(family = "Times New Roman", colour = "black"),
+      axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
+      axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
+      legend.text = element_text(family = "Times New Roman"),
+      legend.title = element_text(family = "Times New Roman")
+    )
+}
