@@ -36,11 +36,16 @@ data <- data %>%
     n_participants = map_dbl(reliability, ~.x$final$n),
     scale_type = ifelse(truth_rating_scale == "dichotomous", "dichotomous", "scale")
   ) %>% 
-  left_join(procedure_data)
+  left_join(procedure_data, by = c("procedure_id", "n_statements")) %>%
+  left_join(study_overview %>% select(-n_participants), by = c("truth_rating_scale", "study_id")) %>% 
+  left_join(publications_overview, by = "publication_id") 
 
 ## 1. overview table ----
 overview_table_data <- data %>% 
   select(procedure_id,
+         publication_id,
+         authors,
+         conducted,
          n_statements,
          n_participants,
          repetition_time,
@@ -58,6 +63,9 @@ overview_table_data <- data %>%
     rel_art = paste0(art_sb_estimate, " [", art_sb_low, ", ", art_sb_high, "]"),
   ) %>% 
   select(
+    publication_id,
+    authors, 
+    conducted,
     procedure_id,
     n_participants,
     n_statements,
@@ -178,9 +186,11 @@ average_effsize_by_scaletype <- make_2x2_from_coefs(res_d)
 
 ## Plot effect of artificial change data rel ----
 plot_sb_comparison(data)
+ggsave("markdown/images/rel_change_plot.jpg", plot_sb_comparison(data), width = 16, height = 9)
 
 ## Plot effect of artificial change data effsize ----
 plot_d_comparison(data)
+ggsave("markdown/images/eff_change_plot.jpg", plot_d_comparison(data), width = 16, height = 9)
 
 ## Comparing comparable studies: ----
 # Here select some based on criteria suggested by Zajdler (same n_statements, same repetition_time)
@@ -191,6 +201,14 @@ plot_sb_comparison(
       repetition_time < 60
     )
   )
+ggsave("markdown/images/matched_rel_change_plot.jpg", plot_sb_comparison(
+  data %>% 
+    filter(
+      n_statements > 40 & n_statements < 80,
+      repetition_time < 60
+    )
+), width = 16, height = 9)
+
 
 plot_d_comparison(
   data %>% 
@@ -199,6 +217,14 @@ plot_d_comparison(
       repetition_time < 60
     )
 )
+
+ggsave("markdown/images/matched_eff_change_plot.jpg", plot_d_comparison(
+  data %>% 
+    filter(
+      n_statements > 40 & n_statements < 80,
+      repetition_time < 60
+    )
+), width = 16, height = 9)
 
 ## Below things go into an appendix if necessary ----
 

@@ -2,5 +2,69 @@
 
 All analysis were conducted using `r r_citations$r`. `r r_citations$pkgs`.
 
-In the current version of the manuscript, we included `r length(unique(analysis_data$study_id)) %>% apa_num()` studies from `r length(unique(analysis_data$publication_id)) %>% apa_num()` publications, spanning `r length(unique(analysis_data$subject)) %>% apa_num()` participants contributing `r nrow(analysis_data) %>% apa_num()` trials. A complete list of the included publications can be found in Table \@ref(tab:table-db-overview).
+In the current version of the manuscript, we included `r length(unique(analysis_data$study_id)) %>% apa_num()` studies from `r length(unique(analysis_data$publication_id)) %>% apa_num()` publications, spanning `r length(unique(analysis_data$subject)) %>% apa_num()` participants contributing `r nrow(analysis_data) %>% apa_num()` trials.
 
+You can find an overview of the effect size and reliability estimates in the respecitve datasets in table \@ref(tab:table-effsize-overview). A complete list of the included publications with additional information on experimental settings can be found in Table \@ref(tab:table-db-overview) in the appendix.
+
+(ref:table-effsize-overview) Overview of data included
+
+```{r table-effsize-overview}
+overview_table_data_clean <- overview_table_data %>% 
+  select(
+    authors,
+    conducted,
+    procedure_id,
+    n_participants,
+    n_statements,
+    truth_rating_scale,
+    d_control,
+    d_art,
+    rel_control,
+    rel_art
+  )
+
+apa_table(overview_table_data_clean,
+          caption = "Overview of data included")
+```
+
+```{r}
+average_effsize_by_scaletype <- average_effsize_by_scaletype %>% 
+  mutate(
+    print = paste0(round(estimate, 2), " [", round(ci.lb, 2), ", ", round(ci.ub, 2), "]")
+  )
+
+average_rel_by_scaletype <- average_rel_by_scaletype %>% 
+  mutate(
+    print = paste0(round(estimate, 2), " [", round(ci.lb, 2), ", ", round(ci.ub, 2), "]")
+  )
+```
+
+## Impact of response format on effect size
+Meta-analysis revealed that the average effect size in studies using a dichotomous response format was $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "dichotomous", condition == "control") %>% pull(print)`, the average effect size in studies using a scale-based response format was $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "scale", condition == "control") %>% pull(print)`.
+
+In the counterfactual datasets, scaling dichotomous responses and dichotomizing scaled responses, the average effect size for artificially scaled response formats was  $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "scale", condition == "artificial") %>% pull(print)`, the average effect size for artificially dichotomized response formats was $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "dichotomous", condition == "artificial") %>% pull(print)`.
+
+The meta-analysis revealed no significant main or interaction effects of response format or condition on the effect size.
+
+The impact of artificial change in scale type is illustrated in Figure \@ref(fig:eff-change-plot) 
+
+(ref:eff-change-plot) Impact of artificial change in response format on effect size
+```{r eff-change-plot,  fig.cap = paste("(ref:eff-change-plot)"), out.width="90%"}
+knitr::include_graphics("images/eff_change_plot.jpg")
+```
+
+## Impact of response format on reliability
+Meta-analysis revealed that the average reliability in studies using a dichotomous response format was $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "dichotomous", condition == "control") %>% pull(print)`, the average reliability in studies using a scale-based response format was $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "scale", condition == "control") %>% pull(print)`.
+
+In the counterfactual datasets, scaling dichotomous responses and dichotomizing scaled responses, the average reliability for artificially scaled response formats was  $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "scale", condition == "artificial") %>% pull(print)`, the average reliability for artificially dichotomized response formats was $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "dichotomous", condition == "artificial") %>% pull(print)`.
+
+The meta-analysis revealed a significant interaction effect $b =$ `r res_sb$b[4] %>% apa_num()` ($p =$ ``r res_sb$pval[4] %>% apa_num()`)  between response format and condition on the reliability. While artificially dichotomizing scale-based response formats decreases observed reliability, artificially scaling dichotomous response formats using subsequent certainty ratings improved reliability. No other effects were significant.
+
+The impact of artificial change in scale type on reliability is illustrated in Figure SOMETHING. 
+
+(ref:rel-change-plot) Impact of artificial change in response format on reliability
+```{r rel-change-plot,  fig.cap = paste("(ref:rel-change-plot)"), out.width="90%"}
+knitr::include_graphics("images/rel_change_plot.jpg")
+```
+
+Maybe here that we limited the analysis to only comparable datasets (repetition timing etc. and that this also showed similar results). Also, where should I included the analyses replicating Zajdler & Shcnuerch?
