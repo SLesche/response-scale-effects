@@ -1,0 +1,29 @@
+---
+editor_options:
+  chunk_output_type: console
+---
+<!-- # Library calls -->
+```{r data-prep-setup}
+library(tidyverse)
+library(rio)
+library(data.table)
+```
+
+```{r data-prep-functions}
+
+```
+
+```{r data-prep-importing}
+data <- mtcars
+```
+
+```{r data-prep-filter-cil}
+data_cil <- data %>% 
+  filter(cyl == 8) %>% 
+  rownames_to_column(var = "car")
+```
+
+```{r data-prep-save}
+# rio::export(data_cil, "mydata.rdata")
+```
+

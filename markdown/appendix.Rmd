@@ -1,0 +1,9 @@
+# Talking about appendices
+First-level headers create appendix-sections labelled A-Z. You can print tables here aswell and refer to them in your main part. They will receive a prefix to their Table/Figure Number based on the appendix section they are in (see Table \@ref(tab:appendix-example)).
+
+```{r appendix-example}
+apa_table(best_car, caption = "Best car only")
+```
+
+# Another section
+this creates another appendix section

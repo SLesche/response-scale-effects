@@ -1,0 +1,26 @@
+# Introduction
+The introduction to your paper goes here. Just write plain-text for normal purposes. This can be printed in **bold** by using `**bold**` or _italic_ by using `_italic_`. Citations are added using the syntax `@author2000` for inline citations or the syntax `[@author200]` for citations in paragraph [@R-papaja]. These will be printed in the Reference Sections.
+
+## Sub-headers
+Subheades can be defined using multiple `#`-Symbols. This is a level-two header
+
+### Level three
+
+#### Level four
+
+##### Don't use this please
+
+## Tinytex
+To compile to PDF, you need a LaTeX installation on your machine. The easiest way to achieve this is to use `tinytex`. To compile to word you will need to have any Word-distribution on your machine.
+
+```{r echo = TRUE, eval = FALSE}
+install.packages("tinytex")
+
+tinytex::install_tinytex()
+```
+
+## Compiling
+To create a pdf or word. **description here**
+
+## Working Directory Root
+Explain where working directory root is

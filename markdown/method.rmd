@@ -1,0 +1,15 @@
+# Method
+The Method section is usually a good place to start embedding your data-child documents
+```{r method-source-data-prep, child = "markdown/data_prep.rmd"}
+```
+
+```{r method-source-data-anal, child = "markdown/data_analysis.rmd"}
+```
+Describe your method here. You can embed pictured and reference their label (see Figure \@ref(fig:method-example-fig)). You need to call `\@ref(TYPE:CHUNK-NAME)` to embed reference the output of an r chunk.
+
+```{r method-example-fig, fig.cap = 'Plot of mpg over wt', results = 'asis'}
+car_plot
+```
+
+
+You can also refer in inline code to data objects. We used the dataset `mtcars` for our analysis. It consists of data of `r nrow(mtcars)` cars. The syntax "r command" in backticks will evaluate the command using your R-engine.

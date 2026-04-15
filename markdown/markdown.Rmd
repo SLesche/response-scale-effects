@@ -1,0 +1,3 @@
+# Information 
+This is just a file informing you about the use of this template. It does not have any function.
+Head to `master.Rmd` for the master-document needed to knit your apa7 report.

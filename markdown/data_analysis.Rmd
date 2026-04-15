@@ -1,0 +1,43 @@
+---
+editor_options:
+  chunk_output_type: console
+---
+<!-- # Library calls -->
+```{r data-analysis-setup}
+library(tidyverse)
+library(rio)
+library(data.table)
+```
+
+```{r data-analysis-data}
+# data_cil <- rio::import("mydata.rdata")
+```
+
+```{r data-get-car-with-best-mpg}
+best_car <- data_cil %>% 
+  slice_max(mpg, n = 1) %>% 
+  select(car, mpg, disp)
+
+best_cars_table <- data_cil %>% 
+  slice_max(mpg, n = 5) %>% 
+  select(car, mpg, disp)
+```
+
+```{r data-analysis-plot}
+car_plot <- data %>% 
+  ggplot(
+    aes(
+      x = mpg,
+      y = wt
+    )
+  )+
+  geom_point(aes(color = factor(cyl)))+
+  geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed")+
+  theme_classic()+
+  labs(
+    x = "Miles Per Gallon",
+    y = "Weight in Tons",
+    color = "Number of Cylinders"
+  )
+```
+

@@ -1,0 +1,28 @@
+<!-- This file is for LaTeX and R setups -->
+<!-- Latex -->
+<!-- Problem with Latex stuff is, that it won't compile to word correctly... -->
+
+<!-- R -->
+
+```{r setup-libraries}
+# think about calling renv here to make sure everyone has the same packages installed
+list.of.packages <- c("tidyverse", "rio", "rmarkdown", "papaja", "knitr")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+library(papaja)
+library(tidyverse)
+library(rio)
+library(rmarkdown)
+library(knitr)
+
+r_refs("markdown/r-references.bib")
+
+r_citations <- cite_r(
+  file = "markdown/r-references.bib",
+  pkgs = c("papaja", "tidyverse", "knitr"),
+  omit = FALSE,
+  footnote = TRUE
+  )
+
+```
