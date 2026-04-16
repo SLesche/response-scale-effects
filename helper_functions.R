@@ -383,7 +383,7 @@ plot_d_comparison <- function(data){
     coord_flip() +
     labs(
       x = "Procedure ID",
-      y = "Spearman-Brown Estimate",
+      y = "Cohen's d",
       color = "Condition",
       # title = "Effect of Artificial Condition on Reliability"
     ) +
