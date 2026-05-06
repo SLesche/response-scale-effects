@@ -38,7 +38,7 @@ data <- data %>%
   ) %>% 
   left_join(procedure_data, by = c("procedure_id", "n_statements")) %>%
   left_join(study_overview %>% select(-n_participants), by = c("truth_rating_scale", "study_id")) %>% 
-  left_join(publications_overview, by = "publication_id") 
+  left_join(publications_overview, by = "publication_id")
 
 ## 1. overview table ----
 overview_table_data <- data %>% 
@@ -142,6 +142,7 @@ d_data_long <- data %>%
   select(
     procedure_id,
     truth_rating_scale,
+    
     repetition_time,
     scale_type,
     n_statements,
@@ -266,3 +267,25 @@ res_d_repetition_time <- rma.mv(
   random = ~ 1 | procedure_id,
   data = d_data_long %>% filter(condition == "control") %>% mutate(repetition_type = ifelse(repetition_time < 60*24, "sameday", "nextday"))
 )
+
+## Interaction effects ----
+res_sb_int <- rma.mv(
+  yi = sb_estimate,
+  V = (sb_high - sb_low) / (2 * 1.96)^2,
+  mods = ~ repetition_type*truth_rating_scale,
+  random = ~ 1 | procedure_id,
+  data = sb_data_long %>% filter(condition == "control") %>% mutate(repetition_type = ifelse(repetition_time < 60*24, "sameday", "nextday"))
+)
+
+res_sb_int <- rma.mv(
+  yi = sb_estimate,
+  V = (sb_high - sb_low) / (2 * 1.96)^2,
+  mods = ~ repetition_location*truth_rating_scale,
+  random = ~ 1 | procedure_id,
+  data = sb_data_long %>%
+    filter(condition == "control") %>%
+    mutate(repetition_type = ifelse(repetition_time < 60*24, "sameday", "nextday")) %>% 
+    left_join(procedure_data, by = "procedure_id") %>% left_join(study_overview) %>% 
+    mutate(truth_rating_scale = ifelse(truth_rating_scale == "dichotomous", "dichotomous", "scale"))
+)
+

@@ -75,6 +75,7 @@ references_table <- references_table %>%
   )
 
 analysis_data <- full_data %>% 
+  filter(truth_rating_steps %% 2 == 0) %>% 
   filter(phase == "test") %>% 
   filter(!is.na(repeated), !is.na(response)) %>% 
   mutate(
