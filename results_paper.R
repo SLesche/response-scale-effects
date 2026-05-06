@@ -289,3 +289,195 @@ res_sb_int <- rma.mv(
     mutate(truth_rating_scale = ifelse(truth_rating_scale == "dichotomous", "dichotomous", "scale"))
 )
 
+## Certainty Effects ----
+raw_data <- data.table::fread("data/analysis_data.csv") %>% 
+  mutate(direction = ifelse(response < 0.5, '"False" statements', '"True" statements')) %>% 
+  mutate(art_certainty = abs(response - 0.5)) 
+
+dichotomous_data <- raw_data %>% 
+  filter(procedure_id %in% data$procedure_id) %>% 
+  filter(
+    truth_rating_scale == "dichotomous",
+  )
+
+# Pre-compute per-procedure means (for individual lines)
+dichotomous_proc_means_certainty_response <- dichotomous_data %>%
+  filter(!is.na(certainty)) %>% 
+  mutate(
+    procedure_id = factor(procedure_id),
+    repeated = ifelse(repeated == 0, "new", "repeated")
+  ) %>%
+  group_by(procedure_id, direction, repeated) %>%
+  summarize(
+    mean_cert = mean(certainty), .groups = "drop",
+    mean_response = mean(response)
+  )
+
+# Pre-compute overall average + 95% CI (for the average line + error bars)
+dichotomous_overall_means <- dichotomous_data %>%
+  mutate(repeated = ifelse(repeated == 0, "new", "repeated")) %>%
+  filter(!is.na(certainty)) %>% 
+  group_by(direction, repeated) %>%
+  summarize(
+    mean_cert  = mean(certainty, na.rm = TRUE),
+    se_cert         = sd(certainty) / sqrt(n()),
+    ci_low_cert     = mean_cert - 1.96 * se_cert,
+    ci_high_cert    = mean_cert + 1.96 * se_cert,
+    .groups    = "drop"
+  )
+
+# Plot
+dichotomous_impact_on_certainty_plot <- ggplot() +
+  # Individual procedure lines (light, in background)
+  geom_line(
+    data = dichotomous_proc_means_certainty_response,
+    aes(x = repeated, y = mean_cert,
+        color = procedure_id, group = procedure_id),
+    alpha = 0.3
+  ) +
+  # Overall average line
+  geom_line(
+    data = dichotomous_overall_means,
+    aes(x = repeated, y = mean_cert, group = 1),
+    color = "black", linewidth = 1.2
+  ) +
+  # Error bars around the average
+  geom_errorbar(
+    data = dichotomous_overall_means,
+    aes(x = repeated, ymin = ci_low_cert, ymax = ci_high_cert),
+    color = "black", width = 0.1, linewidth = 1
+  ) +
+  facet_wrap(~direction) +
+  labs(
+    x     = "Statement Repetition Status",
+    y     = "Mean certainty rating",
+    # title = "Certainty ratings by exposure type and direction"
+  ) +
+  theme_minimal()+
+  theme(legend.position = "none")
+
+
+dichotomous_table_certainty_by_repetition <- dichotomous_data %>% 
+  filter(!is.na(certainty)) %>% 
+  group_by(
+    # procedure_id,
+    repeated,
+  ) %>% 
+  summarize(mean_certainty = mean(certainty))
+
+cert_model_dichotomous <- lmer(certainty ~ repeated*response + (1 | subject) + (1 | procedure_id), data = dichotomous_data)
+summary(cert_model_dichotomous)
+
+## For likert data ----
+likert_data <- raw_data %>% 
+  filter(procedure_id %in% data$procedure_id) %>% 
+  filter(
+    truth_rating_scale == "likert"
+  )
+
+# Pre-compute per-procedure means (for individual lines)
+likert_proc_means_certainty_response <- likert_data %>%
+  mutate(
+    procedure_id = factor(procedure_id),
+    repeated = ifelse(repeated == 0, "new", "repeated")
+  ) %>%
+  group_by(procedure_id, direction, repeated) %>%
+  summarize(
+    mean_cert = mean(art_certainty), .groups = "drop",
+    mean_response = mean(response)
+    )
+
+# Pre-compute overall average + 95% CI (for the average line + error bars)
+likert_overall_means <- likert_data %>%
+  mutate(repeated = ifelse(repeated == 0, "new", "repeated")) %>%
+  group_by(direction, repeated) %>%
+  summarize(
+    mean_cert  = mean(art_certainty),
+    se_cert         = sd(art_certainty) / sqrt(n()),
+    ci_low_cert     = mean_cert - 1.96 * se_cert,
+    ci_high_cert    = mean_cert + 1.96 * se_cert,
+    mean_response  = mean(response),
+    se_response         = sd(response) / sqrt(n()),
+    ci_low_response     = mean_response - 1.96 * se_response,
+    ci_high_response    = mean_response + 1.96 * se_response,
+    .groups    = "drop"
+  )
+
+# Plot
+likert_impact_on_response_plot <- ggplot() +
+  # Individual procedure lines (light, in background)
+  geom_line(
+    data = likert_proc_means_certainty_response,
+    aes(x = repeated, y = mean_response,
+        color = procedure_id, group = procedure_id),
+    alpha = 0.3
+  ) +
+  # Overall average line
+  geom_line(
+    data = likert_overall_means,
+    aes(x = repeated, y = mean_response, group = 1),
+    color = "black", linewidth = 1.2
+  ) +
+  # Error bars around the average
+  geom_errorbar(
+    data = likert_overall_means,
+    aes(x = repeated, ymin = ci_low_response, ymax = ci_high_response),
+    color = "black", width = 0.1, linewidth = 1
+  ) +
+  facet_wrap(~direction) +
+  labs(
+    x     = "Statement Repetition Status",
+    y     = "Mean truth rating",
+    # title = "Certainty ratings by exposure type and direction"
+  ) +
+  theme_minimal()+
+  theme(legend.position = "none")
+
+# Plot
+likert_impact_on_certainty_plot <- ggplot() +
+  # Individual procedure lines (light, in background)
+  geom_line(
+    data = likert_proc_means_certainty_response,
+    aes(x = repeated, y = mean_cert,
+        color = procedure_id, group = procedure_id),
+    alpha = 0.3
+  ) +
+  # Overall average line
+  geom_line(
+    data = likert_overall_means,
+    aes(x = repeated, y = mean_cert, group = 1),
+    color = "black", linewidth = 1.2
+  ) +
+  # Error bars around the average
+  geom_errorbar(
+    data = likert_overall_means,
+    aes(x = repeated, ymin = ci_low_cert, ymax = ci_high_cert),
+    color = "black", width = 0.1, linewidth = 1
+  ) +
+  facet_wrap(~direction) +
+  labs(
+    x     = "Statement Repetition Status",
+    y     = "Mean artificial certainty rating",
+    # title = "Certainty ratings by exposure type and direction"
+  ) +
+  theme_minimal()+
+  theme(legend.position = "none")
+  
+
+likert_table_certainty_by_repetition <- likert_data %>% 
+  group_by(
+    # procedure_id,
+    repeated,
+  ) %>% 
+  summarize(mean_certainty = mean(art_certainty))
+
+
+likert_table_response_by_repetition <- likert_data %>% 
+  group_by(
+    repeated,
+    direction
+  ) %>% 
+  summarize(mean_resp = mean(response))
+
+likert_model_certainty_by_repetition <- lmer(art_certainty ~ repeated + (1 + repeated | subject) + (1 | procedure_id), data = likert_data)
+likert_model_response_by_repetition <- lmer(response ~ repeated*direction + (1 | subject) + (1 | procedure_id), data = likert_data)
