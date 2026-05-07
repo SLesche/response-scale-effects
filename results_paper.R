@@ -335,7 +335,7 @@ dichotomous_impact_on_certainty_plot <- ggplot() +
     data = dichotomous_proc_means_certainty_response,
     aes(x = repeated, y = mean_cert,
         color = procedure_id, group = procedure_id),
-    alpha = 0.3
+    alpha = 0.6
   ) +
   # Overall average line
   geom_line(
@@ -362,7 +362,9 @@ dichotomous_impact_on_certainty_plot <- ggplot() +
     axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
     axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
     legend.text = element_text(family = "Times New Roman", size = 20),
-    legend.title = element_text(family = "Times New Roman", size = 20)
+    legend.title = element_text(family = "Times New Roman", size = 20),
+    strip.text = element_text(family = "Times New Roman", size = 20)
+    
   )
 
 ggsave("markdown/images/dichotomous_impact_on_certainty_plot.jpg", dichotomous_impact_on_certainty_plot, width = 16, height = 9)
@@ -420,7 +422,7 @@ likert_impact_on_response_plot <- ggplot() +
     data = likert_proc_means_certainty_response,
     aes(x = repeated, y = mean_response,
         color = procedure_id, group = procedure_id),
-    alpha = 0.3
+    alpha = 0.6
   ) +
   # Overall average line
   geom_line(
@@ -447,7 +449,8 @@ likert_impact_on_response_plot <- ggplot() +
     axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
     axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
     legend.text = element_text(family = "Times New Roman", size = 20),
-    legend.title = element_text(family = "Times New Roman", size = 20)
+    legend.title = element_text(family = "Times New Roman", size = 20),
+    strip.text = element_text(family = "Times New Roman", size = 20)
   )
 
 ggsave("markdown/images/likert_impact_on_response_plot.jpg", likert_impact_on_response_plot, width = 16, height = 9)
@@ -459,7 +462,7 @@ likert_impact_on_certainty_plot <- ggplot() +
     data = likert_proc_means_certainty_response,
     aes(x = repeated, y = mean_cert,
         color = procedure_id, group = procedure_id),
-    alpha = 0.3
+    alpha = 0.6
   ) +
   # Overall average line
   geom_line(
@@ -486,7 +489,9 @@ likert_impact_on_certainty_plot <- ggplot() +
     axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
     axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
     legend.text = element_text(family = "Times New Roman", size = 20),
-    legend.title = element_text(family = "Times New Roman", size = 20)
+    legend.title = element_text(family = "Times New Roman", size = 20),
+    strip.text = element_text(family = "Times New Roman", size = 20)
+    
   )
 
 ggsave("markdown/images/likert_impact_on_certainty_plot.jpg", likert_impact_on_certainty_plot, width = 16, height = 9)
