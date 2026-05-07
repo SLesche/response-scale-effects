@@ -9,7 +9,7 @@ if (compute_new) source("prepare_results.R")
 source("results_paper.R")
 ```
 
-In order to collect evidence from as many datasets as possible, we retrieved data from the Truth Effect Database (TED) [@lesche2026introducing], an open database for research focusing on the illusory truth effect (ITE). 
+In order to collect evidence from as many datasets as possible, we retrieved data from the Truth Effect Database (TED) [@lescheIntroducingTruthEffect2026], an open database for research focusing on the illusory truth effect (ITE). 
 <!-- In total, we extracted data from `r n_publications_original` publications, contributing `r n_studies_original` studies, `r n_participants_original` participants, and a total of `r n_trials_original` trials. -->
 We only included data from the judgment phase, excluded missing data in either the response or the repetition status and excluded studies where the ITE was measured between-participants and studies where the response format allowed a "neutral" response. We therefore excluded all studies with sliders and studies using likert scale ratings with an odd number of response options.
 
