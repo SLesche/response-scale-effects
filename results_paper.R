@@ -356,7 +356,14 @@ dichotomous_impact_on_certainty_plot <- ggplot() +
     # title = "Certainty ratings by exposure type and direction"
   ) +
   theme_minimal()+
-  theme(legend.position = "none")
+  theme(legend.position = "none")+
+  theme(
+    text = element_text(family = "Times New Roman", colour = "black"),
+    axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
+    axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
+    legend.text = element_text(family = "Times New Roman", size = 20),
+    legend.title = element_text(family = "Times New Roman", size = 20)
+  )
 
 ggsave("markdown/images/dichotomous_impact_on_certainty_plot.jpg", dichotomous_impact_on_certainty_plot, width = 16, height = 9)
 
@@ -434,7 +441,14 @@ likert_impact_on_response_plot <- ggplot() +
     # title = "Certainty ratings by exposure type and direction"
   ) +
   theme_minimal()+
-  theme(legend.position = "none")
+  theme(legend.position = "none")+
+  theme(
+    text = element_text(family = "Times New Roman", colour = "black"),
+    axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
+    axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
+    legend.text = element_text(family = "Times New Roman", size = 20),
+    legend.title = element_text(family = "Times New Roman", size = 20)
+  )
 
 ggsave("markdown/images/likert_impact_on_response_plot.jpg", likert_impact_on_response_plot, width = 16, height = 9)
 
@@ -466,7 +480,14 @@ likert_impact_on_certainty_plot <- ggplot() +
     # title = "Certainty ratings by exposure type and direction"
   ) +
   theme_minimal()+
-  theme(legend.position = "none")
+  theme(legend.position = "none")+
+  theme(
+    text = element_text(family = "Times New Roman", colour = "black"),
+    axis.text = element_text(family = "Times New Roman", size = 15, color = "black"),
+    axis.title = element_text(family = "Times New Roman", size = 20, color = "black"),
+    legend.text = element_text(family = "Times New Roman", size = 20),
+    legend.title = element_text(family = "Times New Roman", size = 20)
+  )
 
 ggsave("markdown/images/likert_impact_on_certainty_plot.jpg", likert_impact_on_certainty_plot, width = 16, height = 9)
 
@@ -486,5 +507,5 @@ likert_table_response_by_repetition <- likert_data %>%
   ) %>% 
   summarize(mean_resp = mean(response))
 
-likert_model_certainty_by_repetition <- lmerTest::lmer(art_certainty ~ repeated + (1 + repeated | subject) + (1 | procedure_id), data = likert_data)
+likert_model_certainty_by_repetition <- lmerTest::lmer(art_certainty ~ repeated*direction + (1 + repeated | subject) + (1 | procedure_id), data = likert_data)
 # likert_model_response_by_repetition <- lmerTest::lmer(response ~ repeated*direction + (1 | subject) + (1 | procedure_id), data = likert_data)
