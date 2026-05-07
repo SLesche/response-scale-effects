@@ -2,7 +2,34 @@
 
 All analysis were conducted using `r r_citations$r`. `r r_citations$pkgs`. In the current version of the manuscript, we included `r length(unique(analysis_data$study_id)) %>% apa_num()` studies from `r length(unique(analysis_data$publication_id)) %>% apa_num()` publications, spanning `r length(unique(analysis_data$subject)) %>% apa_num()` participants contributing `r nrow(analysis_data) %>% apa_num()` trials.
 
-You can find an overview of the effect size and reliability estimates in the respective datasets in Table \@ref(tab:table-effsize-overview) of the appendix.
+```{r}
+n_studies_dichotomous <- data %>%
+  filter(truth_rating_scale == "dichotomous") %>%
+  pull(study_id) %>% unique() %>% length()
+
+n_studies_likert_4 <- data %>%
+  filter(truth_rating_steps == 4) %>%
+  pull(study_id) %>% unique() %>% length()
+
+n_studies_likert_6 <- data %>%
+  filter(truth_rating_steps == 6) %>%
+  pull(study_id) %>% unique() %>% length()
+
+n_datasets_dichotomous <- data %>%
+  filter(truth_rating_scale == "dichotomous") %>%
+  nrow()
+
+n_datasets_likert_4 <- data %>%
+  filter(truth_rating_steps == 4) %>%
+  nrow()
+
+n_datasets_likert_6 <- data %>%
+  filter(truth_rating_steps == 6) %>%
+  nrow()
+```
+
+
+Our final dataset included `r n_studies_dichotomous` studies with a dichotomous response format, `r n_studies_likert_4` studies with a likert scale with 4 options and `r n_studies_likert_6` studies using a likert scale with 6 options. Split by experimental setup within each study, these studies contributed `r n_datasets_dichotomous`, `r n_datasets_likert_4`, and `r n_datasets_likert_6` datasets, respectively. You can find an overview of the effect size and reliability estimates in the respective datasets in Table \@ref(tab:table-effsize-overview) of the appendix.
 
 ```{r}
 average_effsize_by_scaletype <- average_effsize_by_scaletype %>% 
@@ -16,10 +43,34 @@ average_rel_by_scaletype <- average_rel_by_scaletype %>%
   )
 ```
 
+## Effects of repetition on certainty
+
+First, we re-analyzed the dichotomous data with separate certainty ratings originally analyzed in @stumpIllusoryCertaintyInformation2024. Across all datasets, the average certainty rating for new statements (`r dichotomous_table_certainty_by_repetition %>% filter(repeated == 0) %>% pull(mean_certainty) %>% apa_num()`) was lower than for repeated statements (`r dichotomous_table_certainty_by_repetition %>% filter(repeated == 1) %>% pull(mean_certainty) %>% apa_num()`). The interaction between the given truth judgment and the effect of repetition is visualized in Figure \@ref(fig:dich-certainty-plot). Certainty is increased in repeated statements both for statements judged "true", and of statements judged "false".
+
+(ref:dich-certainty-plot) Average certainty rating by repetition status and truth judgment. Certainty was maximum-normalized to the range [0, 1] prior to analysis. The black line shows the mean across all datasets; faint colored lines represent dataset-specific means. Error bars denote 95% confidence intervals.
+
+```{r dich-certainty-plot,  fig.cap = paste("(ref:dich-certainty-plot)"), out.width="90%"}
+knitr::include_graphics("images/dichotomous_impact_on_certainty_plot.jpg")
+```
+
+Subsequently, we analyzed Likert scale data to assess the impact of repetition on the distance of the judgment from the midpoint, representing artificial certainty. To visualize this impact, we again split the plot by the direction in which the participant's truth judgment was given. If the response was below the midpoint of the scale, no matter the extremeity by which, this response was categorized as a "false" judgment, if it was above the midpoint, it was a "true" judgment. 
+
+For "true" judgments, the average response is higher for repeated than for new statements (`r likert_table_response_by_repetition %>% filter(repeated == 1, str_detect(direction, "True")) %>% pull(mean_resp) %>% apa_num()` vs. `r likert_table_response_by_repetition %>% filter(repeated == 0, str_detect(direction, "True")) %>% pull(mean_resp) %>% apa_num()`). For "false" judgments, the average response is lower for repeated than for new statements (`r likert_table_response_by_repetition %>% filter(repeated == 1, str_detect(direction, "False")) %>% pull(mean_resp) %>% apa_num()` vs. `r likert_table_response_by_repetition %>% filter(repeated == 0, str_detect(direction, "False")) %>% pull(mean_resp) %>% apa_num()`). In both cases, the distance from the midpoint (artificial certainty) is larger for repeated, than for new statements (see Figure \@ref(fig:likert-certainty-plot)). 
+
+(ref:likert-certainty-plot) Average artificial certainty rating by repetition status and truth judgment. Artificial certainty was obtained by computing the absolute distance of the response from the midpoint of the maximum-normalized scale. The black line shows the mean across all datasets; faint colored lines represent dataset-specific means. Error bars denote 95% confidence intervals.
+
+```{r likert-certainty-plot,  fig.cap = paste("(ref:likert-certainty-plot)"), out.width="90%"}
+knitr::include_graphics("images/likert_impact_on_certainty_plot.jpg")
+```
+
+These analyses reveal that certainty ratings are impacted by repetition similarly in both likert- and dichotomous response formats. In particular, repetition increases certainty for both "true" and "false" judgments. In likert scale data, this results in a decrease of truth rating for repeated statements judged "false". 
+
+To better understand the impact of scale formats on the effect size and reliability of the ITE, we created counterfactual datasets where we artificially changed the response format from likert to dichotomous data and vice-versa.
+
 ## Impact of response format on effect size
 Meta-analysis revealed that the average effect size in studies using a dichotomous response format was $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "dichotomous", condition == "control") %>% pull(print)`, the average effect size in studies using a scale-based response format was $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "scale", condition == "control") %>% pull(print)`.
 
-In the counterfactual datasets (i.e. scaling dichotomous responses and dichotomizing scaled responses), the average effect size for artificially scaled response formats was  $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "scale", condition == "artificial") %>% pull(print)`, the average effect size for artificially dichotomized response formats was $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "dichotomous", condition == "artificial") %>% pull(print)`.
+In the counterfactual datasets (i.e. scaling dichotomous responses and dichotomizing scaled responses), the average effect size for artificially scaled response formats was  $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "dichotomous", condition == "artificial") %>% pull(print)`, the average effect size for artificially dichotomized response formats was $d =$ `r average_effsize_by_scaletype %>% filter(scale_type == "scale", condition == "artificial") %>% pull(print)`.
 
 The meta-analysis revealed no significant main or interaction effects of response format or condition on the effect size. 
 
@@ -34,7 +85,7 @@ knitr::include_graphics("images/eff_change_plot.jpg")
 ## Impact of response format on reliability
 Meta-analysis revealed that the average reliability in studies using a dichotomous response format was $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "dichotomous", condition == "control") %>% pull(print)`, the average reliability in studies using a scale-based response format was $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "scale", condition == "control") %>% pull(print)`.
 
-In the counterfactual datasets, the average reliability for artificially scaled response formats was  $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "scale", condition == "artificial") %>% pull(print)`, the average reliability for artificially dichotomized response formats was $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "dichotomous", condition == "artificial") %>% pull(print)`.
+In the counterfactual datasets, the average reliability for artificially scaled response formats was  $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "dichotomous", condition == "artificial") %>% pull(print)`, the average reliability for artificially dichotomized response formats was $r =$ `r average_rel_by_scaletype %>% filter(scale_type == "scale", condition == "artificial") %>% pull(print)`.
 
 The meta-analysis revealed a significant interaction effect $b =$ `r res_sb$b[4] %>% apa_num()`, 95% CI `r paste0("[", res_sb$ci.lb[4] %>% apa_num(), ", ", res_sb$ci.ub[4] %>% apa_num(), "]")`, $p =$ `r res_sb$pval[4] %>% apa_p()`  between response format and condition on the reliability. While artificially dichotomizing scale-based response formats decreases reliability, artificially scaling dichotomous response formats using subsequent certainty ratings improved reliability. No other effects were significant.
 

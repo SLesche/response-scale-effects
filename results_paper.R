@@ -1,4 +1,5 @@
 library(tidyverse)
+library(lme4)
 library(acdcquery)
 library(metafor)
 source("helper_functions.R")
@@ -298,7 +299,8 @@ dichotomous_data <- raw_data %>%
   filter(procedure_id %in% data$procedure_id) %>% 
   filter(
     truth_rating_scale == "dichotomous",
-  )
+  ) %>% 
+  mutate(certainty = (certainty - 1) / 5)
 
 # Pre-compute per-procedure means (for individual lines)
 dichotomous_proc_means_certainty_response <- dichotomous_data %>%
@@ -356,6 +358,7 @@ dichotomous_impact_on_certainty_plot <- ggplot() +
   theme_minimal()+
   theme(legend.position = "none")
 
+ggsave("markdown/images/dichotomous_impact_on_certainty_plot.jpg", dichotomous_impact_on_certainty_plot, width = 16, height = 9)
 
 dichotomous_table_certainty_by_repetition <- dichotomous_data %>% 
   filter(!is.na(certainty)) %>% 
@@ -365,7 +368,7 @@ dichotomous_table_certainty_by_repetition <- dichotomous_data %>%
   ) %>% 
   summarize(mean_certainty = mean(certainty))
 
-cert_model_dichotomous <- lmer(certainty ~ repeated*response + (1 | subject) + (1 | procedure_id), data = dichotomous_data)
+cert_model_dichotomous <- lmerTest::lmer(certainty ~ repeated*response + (1 | subject) + (1 | procedure_id), data = dichotomous_data)
 summary(cert_model_dichotomous)
 
 ## For likert data ----
@@ -433,6 +436,8 @@ likert_impact_on_response_plot <- ggplot() +
   theme_minimal()+
   theme(legend.position = "none")
 
+ggsave("markdown/images/likert_impact_on_response_plot.jpg", likert_impact_on_response_plot, width = 16, height = 9)
+
 # Plot
 likert_impact_on_certainty_plot <- ggplot() +
   # Individual procedure lines (light, in background)
@@ -462,7 +467,9 @@ likert_impact_on_certainty_plot <- ggplot() +
   ) +
   theme_minimal()+
   theme(legend.position = "none")
-  
+
+ggsave("markdown/images/likert_impact_on_certainty_plot.jpg", likert_impact_on_certainty_plot, width = 16, height = 9)
+
 
 likert_table_certainty_by_repetition <- likert_data %>% 
   group_by(
@@ -479,5 +486,5 @@ likert_table_response_by_repetition <- likert_data %>%
   ) %>% 
   summarize(mean_resp = mean(response))
 
-likert_model_certainty_by_repetition <- lmer(art_certainty ~ repeated + (1 + repeated | subject) + (1 | procedure_id), data = likert_data)
-likert_model_response_by_repetition <- lmer(response ~ repeated*direction + (1 | subject) + (1 | procedure_id), data = likert_data)
+likert_model_certainty_by_repetition <- lmerTest::lmer(art_certainty ~ repeated + (1 + repeated | subject) + (1 | procedure_id), data = likert_data)
+# likert_model_response_by_repetition <- lmerTest::lmer(response ~ repeated*direction + (1 | subject) + (1 | procedure_id), data = likert_data)

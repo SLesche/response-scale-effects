@@ -65,10 +65,9 @@ raw_data %>%
   ) %>% 
   summarize(mean_certainty = mean(certainty))
 
-model <- lmer(response ~ repeated + direction + repeated:direction + (1 | subject), data = raw_data %>% 
+model <- lmer(abs(response - 0.5) ~ repeated + (1 | subject), data = raw_data %>% 
                 mutate(direction = ifelse(response < 0.5, "false", "true")))
 summary(model)
-
 
 raw_data %>% 
   # filter(procedure_id == example) %>% 

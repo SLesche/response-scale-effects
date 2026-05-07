@@ -11,7 +11,7 @@ source("results_paper.R")
 
 In order to collect evidence from as many datasets as possible, we retrieved data from the Truth Effect Database (TED) [@lesche2026introducing], an open database for research focusing on the illusory truth effect (ITE). 
 <!-- In total, we extracted data from `r n_publications_original` publications, contributing `r n_studies_original` studies, `r n_participants_original` participants, and a total of `r n_trials_original` trials. -->
-We only included data from the judgment phase, excluded missing data in either the response or the repetition status and excluded studies where the ITE was measured between-participants and studies where the response format allowed a "neutral" response, i.e. Likert scale ratings with an odd number of response options.
+We only included data from the judgment phase, excluded missing data in either the response or the repetition status and excluded studies where the ITE was measured between-participants and studies where the response format allowed a "neutral" response. We therefore excluded all studies with sliders and studies using likert scale ratings with an odd number of response options.
 
 ```{r}
 study_overview <- study_overview %>% 
@@ -28,17 +28,19 @@ n_scale <- n_likert + n_range
 
 ```
 
-Of the `r length(unique(analysis_data$study_id)) %>% apa_num()` remaining studies following exclusion, `r n_dichotomous` employed a dichotomous response format to truth judgments, whereas `r n_scale` studies employed a scale response format (`r n_likert` studies employed a Likert scale and `r n_range` a slider from 0-100).
+Of the `r length(unique(analysis_data$study_id)) %>% apa_num()` remaining studies following exclusion, `r n_dichotomous` employed a dichotomous response format to truth judgments, whereas `r n_scale` studies employed a scale response format.
 
 The number of participants ranged from `r min(study_overview$n_participants, na.rm = TRUE)` to `r max(study_overview$n_participants, na.rm = TRUE)`. On average, studies included `r mean(study_overview$n_participants, na.rm = TRUE)` participants ($\mu_{age} =$ `r weighted.mean(age_data$participant_age, age_data$n_participants, na.rm = TRUE)`,$\sigma_{age} =$ `r DescTools::SD(age_data$participant_age, weights = age_data$n_participants, na.rm = TRUE)`). 
 
 ## Analysis
-The ITE was operationalized as the within-participant difference in truth judgments between repeated and new statements. All scale responses were rescaled via maximum-normalization to the [0, 1] interval prior to analysis. We calculated effect sizes using Cohen’s d for paired samples by first computing, for each participant, the mean truth judgment for repeated and non-repeated items, and then computing the standardized mean difference between these paired observations across participants. 
+The ITE was operationalized as the within-participant difference in truth judgments between repeated and new statements. All scale responses were rescaled via maximum-normalization to the [0, 1] interval prior to analysis. Certainty ratings were similarly maximum-normalized to the [0, 1] interval.
+
+We calculated effect sizes using Cohen’s d for paired samples by first computing, for each participant, the mean truth judgment for repeated and non-repeated items, and then computing the standardized mean difference between these paired observations across participants. 
 
 For reliability estimation, trials were randomly split into two equal halves within participants and conditions; split-half correlations were computed across participants and corrected using the Spearman–Brown formula as implemented in the `splithalf` package [@R-splithalf]. This procedure was repeated 5,000 times, and estimates were averaged.
 
-To investigate the impact of response format on the reliability of the ITE, we constructed counterfactual datasets. For Likert and range-scale data, we pseudo-dichotomized responses at the midpoint of the scale: responses below the midpoint were coded as 0, responses above the midpoint as 1.
+To investigate the impact of response format on the reliability of the ITE, we constructed counterfactual datasets. For Likert data, we pseudo-dichotomized responses at the midpoint of the scale: responses below the midpoint were coded as 0, responses above the midpoint as 1. As a proxy for a certainty rating in Likert data, we used the distance of the rating to the midpoint. Truth judgments close to the midpoint receive lower pseudo-certainty values and truth judgments at either extremes of the response format receive the highest pseudo-certainty value.
 
-To transform dichotomous responses into a continuous (scale-like) format, we leveraged datasets in which participants provided a certainty rating following each truth judgment (e.g., “How certain are you of this response?”). We combined the binary response with the associated certainty rating to obtain a graded response. Specifically, we subtracted 0.5 from the dichotomous response, multiplied by the corresponding certainty rating, and then normalized back to the original scale range of 0 to 1. This procedure yields a continuous measure that preserves the direction of the original dichotomous judgment while incorporating graded confidence, thereby approximating a scale-based response format.
+To transform dichotomous responses into a continuous (scale-like) format, we leveraged datasets in which participants provided a separate certainty rating following each truth judgment (e.g., “How certain are you of this response?”). We combined the binary response with the associated certainty rating to obtain a graded response. Specifically, we subtracted 0.5 from the dichotomous response, multiplied by the corresponding certainty rating, and then normalized back to the original scale range of 0 to 1. This procedure yields a continuous measure that preserves the direction of the original dichotomous judgment while incorporating graded confidence, thereby approximating a scale-based response format.
 
 To estimate average reliability and effect size across control and counterfactual datasets, we used a multilevel random-effects meta-analytic model. Sampling variances were approximated from the confidence intervals. The model included fixed effects for response format (dichotomous vs. scale), condition (control vs. counterfactual), and their interaction. To account for the non-independence of estimates within procedures, we included a random intercept for procedure ID.
