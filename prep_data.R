@@ -1,10 +1,9 @@
 library(tidyverse)
 library(acdcquery)
 
-# download_ted("data/")
-check_ted("data/ted.db")
+# download_ted("data/", tag = "v.0.1.1-alpha")
+check_ted("data/ted.db", tag = "v.0.1.1-alpha")
 conn <- connect_to_db("data/ted.db")
-
 
 all_argument <- list() %>% 
   add_argument(
