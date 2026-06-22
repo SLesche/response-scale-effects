@@ -45,7 +45,7 @@ average_rel_by_scaletype <- average_rel_by_scaletype %>%
 
 ## Effects of repetition on certainty
 
-First, we re-analyzed the dichotomous data with separate certainty ratings originally analyzed in @stumpIllusoryCertaintyInformation2024. This effect was present for both “true” and “false” judgments, with the strongest increase for repeated “true” statements (see Figure \@ref(fig:dich-certainty-plot)). A multilevel model confirmed significant effects of repetition, truth judgment, and their interaction on certainty (all p < .001).
+First, we re-analyzed the dichotomous data with separate certainty ratings originally analyzed in @stump2024. This effect was present for both “true” and “false” judgments, with the strongest increase for repeated “true” statements (see Figure \@ref(fig:dich-certainty-plot)). A multilevel model confirmed significant effects of repetition, truth judgment, and their interaction on certainty (all p < .001).
 
 (ref:dich-certainty-plot) Average certainty rating by repetition status and truth judgment. Certainty was maximum-normalized to the range [0, 1] prior to analysis. The black line shows the mean across all datasets; faint colored lines represent dataset-specific means. Error bars denote 95% confidence intervals.
 

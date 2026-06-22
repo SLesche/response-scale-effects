@@ -22,7 +22,7 @@ A multilevel model using truth judgment and repetition status as predictors for 
 overview_table_data_clean <- overview_table_data %>% 
   ungroup() %>% 
   mutate(
-    first_author = trimws(sub(",.*", "", authors)),
+    first_author = sub(" ", "", (sub(",.*", "", authors))),
     publication = paste0("@", first_author, conducted)
   ) %>% 
   select(
@@ -37,13 +37,12 @@ overview_table_data_clean <- overview_table_data %>%
     rel_art
   ) %>% 
   mutate(
-    conducted = as.character(round(conducted, 0)),
     procedure_id = as.character(round(procedure_id, 0)),
     n_participants = as.character(round(n_participants, 0)),
     n_statements = as.character(round(n_statements, 0)),
-    publication = paste0(authors, " (", conducted, ")")
+    # publication = paste0(authors, " (", conducted, ")")
   ) %>% 
-  select(-authors, -conducted) %>% 
+  # select(-authors, -conducted) %>% 
   select(publication, everything())
 
 apa_table(overview_table_data_clean,
