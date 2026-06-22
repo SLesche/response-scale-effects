@@ -40,3 +40,6 @@ Effect sizes (Cohen's d for paired samples) were computed from participant-level
 To examine the impact of response format, we generated counterfactual datasets. Likert responses were pseudo-dichotomized at the scale midpoint, and pseudo-certainty was derived from the distance to the midpoint. Conversely, in datasets containing separate certainty ratings, dichotomous truth judgments were transformed into continuous responses by combining judgment direction with certainty and rescaling the resulting values to the [0, 1] interval.
 
 Average effect sizes and reliabilities across original and counterfactual datasets were analyzed using multilevel random-effects meta-analysis. Models included response format (dichotomous vs. scale), condition (original vs. counterfactual), and their interaction as fixed effects, with random intercepts for experiments (procedure_id) to account for non-independence of estimates. Sampling variances were approximated from confidence intervals.
+
+## Transparency and Openness
+We did not predetermine sample size. All data, analysis code, and research materials are available at https://doi.org/10.5281/zenodo.20796312. All analysis were conducted using `r r_cite_intext`. Additional information on packages is available in the appendix.
