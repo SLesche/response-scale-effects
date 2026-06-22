@@ -1,6 +1,6 @@
 # Results
 
-All analysis were conducted using `r r_citations$r`. In the current version of the manuscript, we included `r length(unique(analysis_data$study_id)) %>% apa_num()` studies from `r length(unique(analysis_data$publication_id)) %>% apa_num()` publications, spanning `r length(unique(analysis_data$subject)) %>% apa_num()` participants contributing `r nrow(analysis_data) %>% apa_num()` trials.
+All analysis were conducted using `r r_cite_intext`. In the current version of the manuscript, we included `r length(unique(analysis_data$study_id)) %>% apa_num()` studies from `r length(unique(analysis_data$publication_id)) %>% apa_num()` publications, spanning `r length(unique(analysis_data$subject)) %>% apa_num()` participants contributing `r nrow(analysis_data) %>% apa_num()` trials.
 
 ```{r}
 n_studies_dichotomous <- data %>%

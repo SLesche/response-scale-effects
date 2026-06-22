@@ -25,6 +25,13 @@ r_citations <- cite_r(
   footnote = TRUE
   )
 
+r_cite_intext <- cite_r(
+  file = "markdown/r-references.bib",
+  pkgs = c("papaja", "tidyverse", "knitr", "acdcquery", "metafor", "splithalf"),
+  omit = FALSE,
+  footnote = FALSE
+  )
+
 ```
 
 

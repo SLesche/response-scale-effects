@@ -1,6 +1,6 @@
 ## R Packages
 
-`r r_citations$pkgs`
+`r str_extract(r_citations$pkgs, "We.*")`
 
 ## Multilevel Models
 

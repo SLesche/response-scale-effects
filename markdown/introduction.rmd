@@ -1,5 +1,3 @@
-# Beyond True and False: Graded Truth Ratings Conflate Perceived Truth and Certainty
-
 People constantly evaluate the truthfulness of information. When deciding whether a news headline is accurate, assessing the credibility of a political claim, or evaluating information encountered in everyday conversations, individuals routinely form beliefs about what is true and what is false. Consequently, truth judgments constitute a central outcome measure in many areas of psychological research. Despite their widespread use, surprisingly little attention has been devoted to a fundamental question: What do truth judgments actually measure?
 
 At first glance, the answer appears straightforward. Truth is commonly conceptualized as binary: a statement is either true or false. Psychological research, however, rarely measures objective truth itself. Instead, researchers assess subjective beliefs about the truthfulness of a statement. Such beliefs are inherently uncertain and often graded. Consequently, researchers frequently employ rating scales that allow participants to express varying degrees of perceived truth rather than requiring a binary decision.
