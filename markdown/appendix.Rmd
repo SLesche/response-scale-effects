@@ -21,9 +21,12 @@ A multilevel model using truth judgment and repetition status as predictors for 
 ```{r table-effsize-overview}
 overview_table_data_clean <- overview_table_data %>% 
   ungroup() %>% 
+  mutate(
+    first_author = trimws(sub(",.*", "", authors)),
+    publication = paste0("@", first_author, conducted)
+  ) %>% 
   select(
-    authors,
-    conducted,
+    publication,
     procedure_id,
     n_participants,
     n_statements,
