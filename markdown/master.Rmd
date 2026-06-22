@@ -1,6 +1,6 @@
 ---
-title             : "Some long title"
-shorttitle        : "SHORT TITLE"
+title             : "Beyond True and False: Graded Truth Ratings Conflate Perceived Truth and Certainty"
+shorttitle        : "Graded Truth Ratings Conflate Perceived Truth and Certainty"
 
 author: 
   - name          : "Sven Lesche"
@@ -26,12 +26,14 @@ affiliation:
   # add a second id using this syntax
 
 authornote: |
-  
+  The authors contributed equally to this work. All code needed to replicate the analyses and reproduce the manuscript can be found here: PLACEHOLDER.
 
 abstract: |
-  Abstract
+  Truth judgments are commonly assessed using graded rating scales, which are often assumed to provide a more precise measure of perceived truth than dichotomous truth judgments. However, graded truth ratings may capture not only perceived truth but also certainty in that judgment. Using data from the Truth Effect Database (TED), comprising 45 studies, 8,807 participants, and 621,112 trials on the illusory truth effect (ITE), we investigated the psychological meaning and psychometric consequences of different truth-judgment response formats.
+   First, we examined whether repetition influences certainty independently of perceived truth. Across datasets containing separate certainty ratings, repetition increased certainty for statements judged as both true and false. A comparable pattern emerged in graded truth ratings, where repetition moved responses farther away from the scale midpoint regardless of judgment direction. These findings suggest that graded truth ratings reflect both perceived truth and certainty. Second, we compared dichotomous and graded response formats with respect to effect size and reliability. Response format had little impact on the effect size of the ITE. In contrast, reliability was affected by response format: transforming dichotomous judgments into graded responses using accompanying certainty ratings increased reliability, whereas dichotomizing graded ratings reduced reliability.
+   Together, these findings challenge the assumption that graded truth ratings merely provide a more precise measure of perceived truth. Instead, they appear to reflect a combination of perceived truth and certainty, with important implications for the interpretation of truth judgments and their psychometric properties.
   
-keywords          : "keyword"
+keywords          : "truth judgments; certainty; confidence; illusory truth effect; response formats; psychometrics"
 # wordcount         : "X"
 
 bibliography      : ["r-references.bib", "truth_effect.bib"] # put your ref files here
