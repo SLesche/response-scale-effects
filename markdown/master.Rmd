@@ -26,7 +26,7 @@ affiliation:
   # add a second id using this syntax
 
 authornote: |
-  The authors contributed equally to this work. All code needed to replicate the analyses and reproduce the manuscript can be found here: PLACEHOLDER.
+  The authors contributed equally to this work. All code needed to replicate the analyses and reproduce the manuscript can be found here: https://doi.org/10.5281/zenodo.20796312
 
 abstract: |
   Truth judgments are commonly assessed using graded rating scales, which are often assumed to provide a more precise measure of perceived truth than dichotomous truth judgments. However, graded truth ratings may capture not only perceived truth but also certainty in that judgment. Using data from the Truth Effect Database (TED), comprising 45 studies, 8,807 participants, and 621,112 trials on the illusory truth effect (ITE), we investigated the psychological meaning and psychometric consequences of different truth-judgment response formats.
