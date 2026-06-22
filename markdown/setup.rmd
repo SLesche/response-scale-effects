@@ -51,8 +51,4 @@ print_icc <- function(icc){
   return(paste0("$ICC~=~", papaja::apa_num(icc), "$"))
 }
 ```
-```{r method-source-data-prep, child = "markdown/data_prep.rmd"}
-```
-```{r method-source-data-anal, child = "markdown/data_analysis.rmd"}
-```
 
