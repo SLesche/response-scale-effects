@@ -1,4 +1,20 @@
-# Included data
+## R Packages
+
+`r r_citations$pkgs`
+
+## Multilevel Models
+
+### Observed Certainty
+
+A multilevel model using truth judgment and repetition status as predictors for certainty rating across all datasets and including random intercepts for subjects and datasets revealed significant effects of repetition $b =$ `r summary(cert_model_dichotomous)$coefficients[2, 1] %>% apa_num()`, $SE =$ `r summary(cert_model_dichotomous)$coefficients[2, 2] %>% apa_num()`, `r paste0("t(", summary(cert_model_dichotomous)$coefficients[2, 3] %>% apa_num(), ") = ", summary(likert_model_certainty_by_repetition)$coefficients[2, 4] %>% apa_num())`, $p$ `r summary(cert_model_dichotomous)$coefficients[2, 5] %>% apa_p()`, truth judgment $b =$ `r summary(cert_model_dichotomous)$coefficients[3, 1] %>% apa_num()`, $SE =$ `r summary(cert_model_dichotomous)$coefficients[3, 2] %>% apa_num()`, `r paste0("t(", summary(cert_model_dichotomous)$coefficients[3, 3] %>% apa_num(), ") = ", summary(likert_model_certainty_by_repetition)$coefficients[3, 4] %>% apa_num())`, $p$ `r summary(cert_model_dichotomous)$coefficients[3, 5] %>% apa_p()`, and their interaction $b =$ `r summary(cert_model_dichotomous)$coefficients[4, 1] %>% apa_num()`, $SE =$ `r summary(cert_model_dichotomous)$coefficients[4, 2] %>% apa_num()`, `r paste0("t(", summary(cert_model_dichotomous)$coefficients[4, 3] %>% apa_num(), ") = ", summary(likert_model_certainty_by_repetition)$coefficients[4, 4] %>% apa_num())`, $p$ `r summary(cert_model_dichotomous)$coefficients[4, 5] %>% apa_p()`. Certainty is increased for "true" judgments, repeated statements, and especially for "true" judgments of repeated statements.
+
+### Artificial Certainty
+
+A multilevel model using truth judgment and repetition status as predictors for artificial certainty rating across all datasets including random intercepts for subjects and datasets revealed significant effects of repetition $b =$ `r summary(likert_model_certainty_by_repetition)$coefficients[2, 1] %>% apa_num()`, $SE =$ `r summary(likert_model_certainty_by_repetition)$coefficients[2, 2] %>% apa_num()`, 
+`r paste0("t(", summary(likert_model_certainty_by_repetition)$coefficients[2, 3] %>% apa_num(), ") = ", summary(likert_model_certainty_by_repetition)$coefficients[2, 4] %>% apa_num())`, $p$ `r summary(likert_model_certainty_by_repetition)$coefficients[2, 5] %>% apa_p()`, truth judgment $b =$ `r summary(likert_model_certainty_by_repetition)$coefficients[3, 1] %>% apa_num()`, $SE =$ `r summary(likert_model_certainty_by_repetition)$coefficients[3, 2] %>% apa_num()`, `r paste0("t(", summary(likert_model_certainty_by_repetition)$coefficients[3, 3] %>% apa_num(), ") = ", summary(likert_model_certainty_by_repetition)$coefficients[3, 4] %>% apa_num())`, $p$ `r summary(likert_model_certainty_by_repetition)$coefficients[3, 5] %>% apa_p()`, and their interaction $b =$ `r summary(likert_model_certainty_by_repetition)$coefficients[4, 1] %>% apa_num()`, $SE =$ `r summary(likert_model_certainty_by_repetition)$coefficients[4, 2] %>% apa_num()`, `r paste0("t(", summary(likert_model_certainty_by_repetition)$coefficients[4, 3] %>% apa_num(), ") = ", summary(likert_model_certainty_by_repetition)$coefficients[4, 4] %>% apa_num())`, $p$ `r summary(likert_model_certainty_by_repetition)$coefficients[4, 5] %>% apa_p()`. Artificial certainty is significantly higher for repeated statements, lower for "true" judgments than "false" judgments of new statements, but higher for "true" judgments than "false" judgments of repeated statements.
+
+
+## Included data
 
 (ref:table-effsize-overview) Overview of data included
 
