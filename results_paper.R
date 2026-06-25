@@ -292,7 +292,7 @@ res_sb_int <- rma.mv(
 
 ## Certainty Effects ----
 raw_data <- data.table::fread("data/analysis_data.csv") %>% 
-  mutate(direction = ifelse(response < 0.5, '"False" statements', '"True" statements')) %>% 
+  mutate(direction = ifelse(response < 0.5, '"False" judgments', '"True" judgments')) %>% 
   mutate(art_certainty = abs(response - 0.5)) 
 
 dichotomous_data <- raw_data %>% 
