@@ -20,14 +20,14 @@ r_refs("markdown/r-references.bib")
 
 r_citations <- cite_r(
   file = "markdown/r-references.bib",
-  pkgs = c("papaja", "tidyverse", "knitr", "acdcquery", "metafor", "splithalf"),
+  pkgs = c("papaja", "tidyverse", "knitr", "acdcquery", "metafor", "lme4", "splithalf"),
   omit = FALSE,
   footnote = TRUE
   )
 
 r_cite_intext <- cite_r(
   file = "markdown/r-references.bib",
-  pkgs = c("papaja", "tidyverse", "knitr", "acdcquery", "metafor", "splithalf"),
+  pkgs = c("papaja", "tidyverse", "knitr", "acdcquery", "metafor", "lme4", "splithalf"),
   omit = FALSE,
   footnote = FALSE
   )
