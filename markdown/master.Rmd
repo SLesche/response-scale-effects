@@ -8,16 +8,25 @@ author:
     corresponding : yes    # Define only one corresponding author
     address       : "Hauptstraße 47-51, 69117 Heidelberg"
     email         : "sven.lesche@psychologie.uni-heidelberg.de"
-    # role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
-    #   - "Conceptualization"
-    #   - "Writing - Original Draft Preparation"
-    #   - "Writing - Review & Editing"
+    role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
+      - "Conceptualization"
+      - "Data curation"
+      - "Formal analysis"
+      - "Methodology"
+      - "Project administration"
+      - "Resources"
+      - "Software"
+      - "Writing - Original Draft Preparation"
+      - "Writing - Review & Editing"
   - name          : "Annika Stump"
     affiliation   : "2"
-    # role:
-    #   - "Conceptualization"
-    #   - "Writing - Original Draft Preparation"
-    #   - "Writing - Review & Editing"
+    role:
+      - "Conceptualization"
+      - "Methodology"
+      - "Project administration"
+      - "Supervision"
+      - "Writing - Original Draft Preparation"
+      - "Writing - Review & Editing"
 affiliation:
   - id            : "1"
     institution   : "Ruprecht-Karls-University Heidelberg"
